@@ -17,6 +17,14 @@ from ats_checker import check_ats_score
 from coding_bp import coding_bp
 from interview_bp import interview_bp
 
+import nltk
+try:
+    nltk.download('punkt')
+    nltk.download('stopwords')
+    nltk.download('averaged_perceptron_tagger')
+except:
+    pass
+
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -289,7 +297,8 @@ if __name__ == "__main__":
     print("   Live Coding + AI Interview Modules Active     ")
     print("="*54 + "\n")
     
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
 else:
     # For production/gunicorn
     from admin import admin_bp
