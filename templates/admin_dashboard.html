@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Command — ESCTRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=1.1">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 120px auto 100px;
+            padding: 0 40px;
+        }
+        .admin-header {
+            margin-bottom: 60px;
+            text-align: left;
+            border-left: 5px solid var(--primary);
+            padding-left: 30px;
+        }
+        .admin-header h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            padding: 25px;
+            border-radius: 24px;
+            text-align: center;
+        }
+        .stat-card .val { font-size: 2rem; font-weight: 800; color: #fff; }
+        .stat-card .label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 5px; }
+
+        .navbar {
+            padding: 20px 40px;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(168,85,247,0.1);
+        }
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .admin-container {
+            max-width: 1300px;
+            margin: 120px auto 100px;
+            padding: 0 40px;
+        }
+        .session-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .session-table th {
+            text-align: left;
+            padding: 20px;
+            color: #888;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .session-row td {
+            padding: 25px 20px;
+            color: #eee;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+        }
+        .btn-view {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: inline-block;
+            transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.2);
+        }
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+        }
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 10px;
+            transition: 0.3s;
+        }
+        .btn-delete:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+        .user-badge {
+            background: rgba(168, 85, 247, 0.1);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" width="30" height="30">
+                <polygon points="12,2 22,20 2,20" fill="url(#sGrad)" />
+                <defs>
+                    <linearGradient id="sGrad">
+                        <stop offset="0%" style="stop-color:#a855f7" />
+                        <stop offset="100%" style="stop-color:#06b6d4" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="brand-name" style="font-weight: 900; margin-left: 10px;">ESCTRIX</span>
+        </a>
+        <div class="nav-actions">
+            <span style="color: #a855f7; font-weight: 700;">Admin: {{ current_user.name }}</span>
+            <a href="/logout" style="color: #888; text-decoration: none; font-size: 0.85rem; font-weight: 600;">Logout</a>
+            <a href="/" style="color: #64748b; text-decoration: none; font-size: 0.85rem; font-weight: 600;">← Back to Home</a>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="admin-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h1>Master Archives</h1>
+                <p style="color: #777; margin-top: 10px;">Reviewing historical screening data across the ESCTRIX platform.</p>
+            </div>
+            <a href="/screen" class="btn-new">Launch Screening Tool</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="val">{{ sessions|length }}</div>
+                <div class="label">Shortlisting Sessions</div>
+            </div>
+            <div class="stat-card">
+                <div class="val">{{ total_ats_checks }}</div>
+                <div class="label">Total ATS Checks</div>
+            </div>
+            <div class="stat-card">
+                <div class="val">{{ avg_score }}</div>
+                <div class="label">Avg Candidate Score</div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 30px; margin-bottom: 50px;">
+            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center; height: 250px;">
+                <canvas id="scoreChart"></canvas>
+            </div>
+            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center; height: 250px;">
+                 <h2 style="color: #666; font-weight: 500;">More analytics coming soon...</h2>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            const ctx = document.getElementById('scoreChart');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Average Score', 'Gap'],
+                    datasets: [{
+                        data: [{{ avg_score }}, {{ 100 - avg_score }}],
+                        backgroundColor: ['#06b6d4', 'rgba(255, 255, 255, 0.05)'],
+                        borderColor: ['#0891b2', 'transparent'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#ccc' } },
+                        title: { display: true, text: 'Global Average ATS Score', color: '#fff', font: {size: 16} }
+                    }
+                }
+            });
+        </script>
+
+        <table class="session-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Recruiter</th>
+                    <th>Job Description</th>
+                    <th>Candidates</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in sessions %}
+                <tr class="session-row">
+                    <td>
+                        <div style="font-weight: 700; color: #fff;">{{ s.created_at.strftime('%m-%d') }}</div>
+                        <div style="font-size: 0.75rem; color: #666;">{{ s.created_at.strftime('%H:%M') }}</div>
+                    </td>
+                    <td><span class="user-badge">{{ s.user.name if s.user else 'Unknown' }}</span></td>
+                    <td>
+                        <div style="max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem;">
+                            {{ s.job_description }}
+                        </div>
+                        <div style="font-size: 0.75rem; color: #555; margin-top: 4px;">{{ s.candidates|length if s.candidates else 0 }} Resumes Processed</div>
+                    </td>
+                    <td style="text-align: right; min-width: 250px;">
+                        <a href="{{ url_for('admin.view_session', session_id=s.id) }}" class="btn-view">Access Records</a>
+                        <a href="{{ url_for('admin.delete_session', session_id=s.id) }}" class="btn-delete" onclick="return confirm('Permanently delete this screening record?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="/static/animation.js?v=1.1"></script>
+</body>
+</html>

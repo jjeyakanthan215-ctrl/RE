@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Profile — ESCTRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+        .profile-container {
+            max-width: 1100px; margin: 100px auto 100px; padding: 50px;
+            background: rgba(15, 15, 25, 0.8);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 40px;
+            backdrop-filter: blur(25px);
+            box-shadow: 0 50px 150px rgba(0,0,0,0.8);
+        }
+        .profile-header { display: flex; align-items: center; gap: 35px; margin-bottom: 60px; }
+        .avatar-circle {
+            width: 120px; height: 120px; border-radius: 40px;
+            background: linear-gradient(135deg, #a855f7, #06b6d4);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; font-weight: 900; color: #fff;
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.3);
+        }
+        .header-text h1 { margin: 0; font-size: 3rem; font-weight: 900; color: #fff; letter-spacing: -1.5px; }
+        .header-text p { color: #888; font-size: 1.2rem; margin-top: 5px; font-weight: 500; }
+
+        .profile-grid { display: grid; grid-template-columns: 1.8fr 1.2fr; gap: 40px; }
+        
+        .section-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 35px; border-radius: 30px; margin-bottom: 40px; }
+        .section-box h3 { font-size: 0.8rem; color: #a855f7; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 25px; font-weight: 800; }
+        
+        /* Questions Styling */
+        .question-item {
+            background: rgba(168, 85, 247, 0.05);
+            border: 1px solid rgba(168, 85, 247, 0.1);
+            padding: 20px; border-radius: 18px; margin-bottom: 15px;
+            display: flex; gap: 15px; align-items: flex-start;
+            transition: 0.3s;
+        }
+        .question-item:hover { transform: translateX(10px); background: rgba(168, 85, 247, 0.1); }
+        .q-icon { background: #a855f7; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 0.7rem; font-weight: 900; }
+        .q-text { color: #eee; font-weight: 500; line-height: 1.5; }
+
+        .summary-text { font-size: 1.3rem; line-height: 1.7; color: #eee; font-weight: 500; border-left: 5px solid #a855f7; padding-left: 25px; }
+        
+        .skill-cloud { display: flex; flex-wrap: wrap; gap: 10px; }
+        .skill-tag { background: rgba(168, 85, 247, 0.1); color: #d8b4fe; border: 1px solid rgba(168, 85, 247, 0.2); padding: 10px 20px; border-radius: 14px; font-weight: 600; font-size: 0.95rem; }
+
+        .info-row { display: flex; justify-content: space-between; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .info-label { color: #777; font-weight: 600; font-size: 0.9rem; }
+        .info-val { color: #fff; font-weight: 700; }
+
+        .score-meter {
+            width: 180px; height: 180px; border-radius: 50%;
+            border: 12px solid rgba(255,255,255,0.05); border-top-color: #a855f7; border-right-color: #06b6d4;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            margin: 0 auto 25px; box-shadow: 0 0 50px rgba(168, 85, 247, 0.1);
+        }
+        .score-meter .num { font-size: 3.5rem; font-weight: 900; color: #fff; line-height: 1; }
+        .score-meter .label { font-size: 0.85rem; color: #a855f7; font-weight: 800; text-transform: uppercase; margin-top: 5px; }
+
+        .btn-group { display: flex; gap: 20px; margin-top: 50px; }
+        .btn { flex: 1; padding: 20px; border-radius: 20px; font-weight: 800; cursor: pointer; text-align: center; text-decoration: none; transition: 0.4s; font-size: 1rem; }
+        .btn-primary { background: linear-gradient(135deg, #a855f7, #06b6d4); color: #fff; border: none; box-shadow: 0 15px 30px rgba(168, 85, 247, 0.3); }
+        .btn-secondary { background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
+        .btn:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+
+        .nav-back-float { position: fixed; top: 30px; left: 30px; color: #888; text-decoration: none; display: flex; align-items: center; gap: 12px; font-weight: 700; transition: 0.3s; z-index: 100; font-size: 0.8rem; background: rgba(168, 85, 247, 0.05); padding: 8px 16px; border-radius: 12px; border: 1px solid rgba(168, 85, 247, 0.1); }
+        .nav-back-float:hover { color: #fff; transform: translateX(-5px); }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="orb-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <a href="/results" class="nav-back-float">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        DASHBOARD
+    </a>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="avatar-circle">{{ candidate.name[0]|upper if candidate.name else '?' }}</div>
+            <div class="header-text">
+                <h1>{{ candidate.name }}</h1>
+                <p>{{ candidate.education }} Specialist · {{ candidate.experience }}</p>
+            </div>
+        </div>
+
+        <div class="profile-grid">
+            <div class="main-col">
+                <div class="section-box">
+                    <h3>System Intelligent Insights</h3>
+                    <div class="summary-text">"{{ candidate.summary }}"</div>
+                </div>
+
+                <!-- Custom Interview Questions Section -->
+                <div class="section-box">
+                    <h3>Custom Interview Questions</h3>
+                    <p style="color: #888; font-size: 0.85rem; margin-bottom: 20px;">System-generated questions based on candidate's level and skill matches.</p>
+                    {% for q in candidate.questions %}
+                    <div class="question-item">
+                        <div class="q-icon">Q</div>
+                        <div class="q-text">{{ q }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="section-box">
+                    <h3>Key Technical Skills</h3>
+                    <div class="skill-cloud">
+                        {% if candidate.skills != "None" %}
+                            {% for skill in candidate.skills.split(', ') %}
+                                <span class="skill-tag">{{ skill }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color:#555;">No technical matches found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="side-col">
+                <div class="section-box">
+                    <h3>JD Alignment</h3>
+                    <div style="display: flex; gap: 20px; justify-content: center;">
+                        <div class="score-meter" style="width: 140px; height: 140px; border-top-color: #06b6d4;">
+                            <div class="num" style="font-size: 2.5rem;">{{ candidate.skill_accuracy|round|int }}%</div>
+                            <div class="label" style="color: #06b6d4;">Skills</div>
+                        </div>
+                        <div class="score-meter" style="width: 140px; height: 140px; border-top-color: #a855f7;">
+                            <div class="num" style="font-size: 2.5rem;">{{ candidate.seniority_match|round|int }}%</div>
+                            <div class="label" style="color: #a855f7;">Seniority</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-box">
+                    <h3>Details</h3>
+                    <div class="info-row"><span class="info-label">Degree</span><span class="info-val">{{ candidate.education }}</span></div>
+                    <div class="info-row"><span class="info-label">Experience</span><span class="info-val">{{ candidate.experience }}</span></div>
+                    <div class="info-row"><span class="info-label">Email</span><span class="info-val" style="font-size: 0.8rem;">{{ candidate.contact.split(',')[0].replace('Email: ', '') }}</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <a href="mailto:{{ candidate.contact.split(',')[0].replace('Email: ', '') }}" class="btn btn-primary">Invite for Interview</a>
+            <button class="btn btn-secondary" onclick="window.print()">Print Report</button>
+        </div>
+    </div>
+    <script src="/static/animation.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Score Checker | ESCTRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .ats-container {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: 40px;
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+        }
+        .ats-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #d1d5db;
+        }
+        .file-upload {
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .file-upload:hover {
+            border-color: #a855f7;
+            background: rgba(168, 85, 247, 0.05);
+        }
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="orb-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <a href="/" style="text-decoration:none; display:flex; align-items:center; color:white;">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" width="28" height="28" style="margin-right:10px;">
+                    <polygon points="12,2 22,20 2,20" fill="url(#logoGrad)" />
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#a855f7" />
+                            <stop offset="100%" style="stop-color:#06b6d4" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span class="brand-name">ESCTRIX</span>
+            </a>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+            <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
+                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="ats-container">
+        <div class="ats-header">
+            <h2><span class="gradient-text">ATS Score</span> Checker</h2>
+            <p>Upload your resume and the job description to see how you match up.</p>
+        </div>
+
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/ats-check" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Job Description</label>
+                <textarea name="job_description" rows="6" placeholder="Paste the full job description here..." required style="width: 100%; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white;"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Upload Resume (PDF/DOCX)</label>
+                <div class="file-upload" onclick="document.getElementById('resume-input').click()">
+                    <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1.5" fill="none" style="margin-bottom: 10px; color: #a855f7;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p id="file-name">Click to select file</p>
+                    <input type="file" name="resume" id="resume-input" accept=".pdf,.docx" required style="display: none;" onchange="document.getElementById('file-name').innerText = this.files[0].name">
+                </div>
+            </div>
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;">
+                Analyze My Resume
+            </button>
+        </form>
+    </div>
+
+    <div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(10,10,15,0.9); z-index:9999; align-items:center; justify-content:center; flex-direction:column; color:white; font-weight:700; gap: 20px;">
+        <div class="spinner" style="width: 40px; height: 40px; border-width: 4px;"></div>
+        Analyzing your resume...
+    </div>
+
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            const overlay = document.getElementById('loading-overlay');
+            overlay.style.display = 'flex';
+        });
+    </script>
+    <script src="/static/animation.js"></script>
+</body>
+</html>

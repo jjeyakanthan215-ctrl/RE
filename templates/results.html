@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recruitment Hub — ESCTRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=1.1">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #a855f7;
+            --secondary: #06b6d4;
+            --bg-card: rgba(15, 15, 25, 0.75);
+            --border-glow: rgba(168, 85, 247, 0.2);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            height: 80px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(10, 10, 15, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            box-sizing: border-box;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .results-container {
+            max-width: 1200px;
+            margin: 120px auto 100px;
+            padding: 0 40px;
+        }
+
+        .header-main {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header-main h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #fff, var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+
+        }
+
+        .jd-pill {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 25px;
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
+            color: var(--primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 80px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            padding: 30px;
+            border-radius: 32px;
+            backdrop-filter: blur(20px);
+        }
+
+        .chart-card h3 {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        .feed-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .feed-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(168, 85, 247, 0.3), transparent);
+        }
+
+        .candidate-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 40px;
+            padding: 50px;
+            margin-bottom: 50px;
+            backdrop-filter: blur(25px);
+            position: relative;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .candidate-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(168, 85, 247, 0.5);
+        }
+
+        .rank-badge {
+            position: absolute;
+            top: -20px;
+            left: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
+            z-index: 5;
+        }
+
+        .candidate-card:first-child .rank-badge {
+            background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.5) !important;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 45px;
+        }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .score-display {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .score-val {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 40px;
+        }
+
+        .info-panel {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 30px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-title {
+            font-size: 0.75rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .summary-box {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #eee;
+            border-left: 5px solid var(--primary);
+            padding-left: 25px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .tag-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag {
+            font-size: 0.85rem;
+            padding: 8px 18px;
+            border-radius: 12px;
+            background: rgba(168, 85, 247, 0.1);
+            color: #d8b4fe;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            font-weight: 600;
+        }
+
+        .tag.missing {
+            background: rgba(239, 68, 68, 0.05);
+            color: #f87171;
+            text-decoration: line-through;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .question-box {
+            background: rgba(168, 85, 247, 0.05);
+            padding: 18px 25px;
+            border-radius: 15px;
+            margin-bottom: 12px;
+            color: #eee;
+            font-size: 0.95rem;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .question-box b {
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .btn-invite {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 18px;
+            border-radius: 18px;
+            background: #fff;
+            color: #000;
+            font-weight: 800;
+            text-decoration: none;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-invite:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-export {
+            background: rgba(6, 182, 212, 0.1);
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+            padding: 12px 24px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .btn-new {
+            background: #fff;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .print-focus,
+            .print-focus * {
+                visibility: visible;
+            }
+
+            .print-focus {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: #fff !important;
+                color: #000 !important;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+
+            .print-focus .panel-title {
+                color: #000 !important;
+            }
+
+            .print-focus .tag {
+                border: 1px solid #ccc !important;
+                color: #000 !important;
+            }
+
+            .print-focus .btn-invite,
+            .print-focus .pdf-btn {
+                display: none !important;
+            }
+
+            .navbar,
+            .header-main,
+            .analytics-grid,
+            .feed-title,
+            .control-bar {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="grid-bg"></div>
+    <div class="orb-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" width="30" height="30">
+                <polygon points="12,2 22,20 2,20" fill="url(#sGrad)" />
+                <defs>
+                    <linearGradient id="sGrad">
+                        <stop offset="0%" style="stop-color:#a855f7" />
+                        <stop offset="100%" style="stop-color:#06b6d4" />
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span class="brand-name" style="font-weight: 900;">ESCTRIX</span>
+        </a>
+        <div class="actions">
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); margin-right: 15px;">
+                <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
+                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Home
+                </a>
+            </div>
+            {% if current_user.is_authenticated %}
+            <span style="color: #a855f7; font-weight: 700; margin-right: 20px; font-size: 0.95rem;">Hello, {{
+                current_user.name }}</span>
+            <a href="/logout"
+                style="color: #888; text-decoration: none; font-size: 0.85rem; margin-right: 20px; font-weight: 600;">Logout</a>
+            {% endif %}
+            <a href="/export" class="btn-export">Export CSV</a>
+            <a href="/screen" class="btn-new">New Session</a>
+        </div>
+    </nav>
+
+    <div class="results-container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); color: #f9a8d4; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-size: 0.9rem;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="header-main">
+            <h1>Recruitment Leaderboard</h1>
+            <div class="jd-pill">Target: {{ job_description[:100] }}...</div>
+        </div>
+
+        <div class="analytics-grid">
+            <div class="chart-card">
+                <h3>Technical Skill Mix</h3>
+                <div class="chart-container"><canvas id="skillsChart"></canvas></div>
+            </div>
+            <div class="chart-card">
+                <h3>Talent Seniority</h3>
+                <div class="chart-container"><canvas id="expChart"></canvas></div>
+            </div>
+        </div>
+
+        <div class="control-bar"
+            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <div class="feed-title" style="margin: 0; flex: 1;">Ranked Candidate Profiles</div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <input type="text" id="searchInput" placeholder="Search skills, names..."
+                    style="padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; width: 250px; font-family: 'Outfit'; font-size: 0.95rem;">
+                <select id="seniorityFilter"
+                    style="padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; font-family: 'Outfit'; font-size: 0.95rem; cursor: pointer;">
+                    <option value="all">All Seniority</option>
+                    <option value="Senior">Senior</option>
+                    <option value="Mid-Level">Mid-Level</option>
+                    <option value="Entry Level">Entry Level</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="candidatesContainer">
+            {% if not results %}
+            <div style="text-align: center; padding: 100px 40px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(168,85,247,0.2); border-radius: 40px; margin-top: 50px;">
+                <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
+                <h2 style="color: #fff; font-weight: 800; font-size: 1.8rem; margin-bottom: 10px;">No Results Found</h2>
+                <p style="color: #777; font-size: 1rem; max-width: 400px; margin: 0 auto 30px;">We couldn't process any resumes or find matches for the current session. Please try uploading clearer documents.</p>
+                <a href="/screen" class="btn-new" style="display: inline-block;">Start New Session</a>
+            </div>
+            {% endif %}
+            {% for row in results %}
+            <div class="candidate-card" data-name="{{ row.name|lower }}" data-skills="{{ row.all_skills|lower }}"
+                data-exp="{{ row.experience }}">
+                <div class="rank-badge">
+                    RANK #{{ loop.index }}
+                </div>
+
+                <div class="profile-header">
+                    <div class="avatar" style="background: linear-gradient(135deg, #a855f7, #06b6d4);">{{ row.name[0]|upper if row.name else '?' }}</div>
+                    <div>
+                        <h2 style="margin:0; font-size:2.2rem; font-weight:900; color:#fff;">{{ row.name }}</h2>
+                        <p style="margin:5px 0 0; color:#888; font-weight:600; font-size:1.1rem;">{{ row.education }} ·
+                            {{ row.experience }}</p>
+                        <p style="margin:5px 0 0; color:#555; font-size:0.8rem; text-transform:uppercase;">File: {{
+                            row.filename }}</p>
+                    </div>
+                    <div class="score-display" style="display: flex; gap: 30px;">
+                        <div style="text-align: center;">
+                            <div class="score-val" style="font-size: 2.5rem; color: #06b6d4;">{{ row.skill_accuracy|int }}%</div>
+                            <div class="score-label" style="font-size: 0.65rem;">Skill Match</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div class="score-val" style="font-size: 2.5rem; color: #a855f7;">{{ row.seniority_match|int }}%</div>
+                            <div class="score-label" style="font-size: 0.65rem;">Seniority</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="main-content">
+                        <div class="info-panel" style="margin-bottom:25px;">
+                            <div class="panel-title">System Verdict</div>
+                            <div class="summary-box">"{{ row.summary }}"</div>
+                        </div>
+
+                        {% if row.score < 100 %} <div class="info-panel" style="margin-bottom:25px;">
+                            <div class="panel-title" style="color: #f87171;">Score Analysis</div>
+                            <p style="color:#e2e8f0; font-size:0.9rem; line-height: 1.6; margin: 0;">
+                                The compatibility score is currently at <strong>{{ row.score }}%</strong>. This score is
+                                reduced because the system could not find the following key qualifications requested in
+                                your Job Description:
+                                <span style="color: #f87171; font-weight: 500;">{{ row.missing if row.missing != "None"
+                                    else "Certain required experience levels or soft skills" }}</span>.
+                            </p>
+                    </div>
+                    {% endif %}
+                    <div class="info-panel">
+                        <div class="panel-title">Keyword Gap Analysis</div>
+                        <div style="margin-bottom:25px;">
+                            <span
+                                style="font-size:0.7rem; color:#06b6d4; text-transform:uppercase; display:block; margin-bottom:10px;">Candidate's
+                                Skillset (All Identified)</span>
+                            <div class="tag-wrap">
+                                {% if row.all_skills != "None" %}
+                                {% for s in row.all_skills.split(', ') %}<span class="tag"
+                                    style="background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9;">{{
+                                    s }}</span>{% endfor %}
+                                {% else %}
+                                <span style="color:#555;">No technical skills identified.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="margin-bottom:25px;">
+                            <span
+                                style="font-size:0.7rem; color:#888; text-transform:uppercase; display:block; margin-bottom:10px;">Matched
+                                Skills (JD Focus)</span>
+                            <div class="tag-wrap">
+                                {% if row.skills != "None" %}
+                                {% for s in row.skills.split(', ') %}<span class="tag">{{ s }}</span>{% endfor %}
+                                {% else %}
+                                <span style="color:#555;">No JD matches found.</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if row.missing != "None" %}
+                        <div>
+                            <span
+                                style="font-size:0.7rem; color:#f87171; text-transform:uppercase; display:block; margin-bottom:10px;">Missing
+                                Qualifications</span>
+                            <div class="tag-wrap">
+                                {% for m in row.missing.split(', ') %}<span class="tag missing">{{ m }}</span>{% endfor
+                                %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="side-content">
+                    <div class="info-panel" style="margin-bottom:25px;">
+                        <div class="panel-title">Suggested Interview Questions</div>
+                        {% for q in row.questions %}
+                        <div class="question-box"><b>Q</b> {{ q }}</div>
+                        {% endfor %}
+                    </div>
+                    <div class="info-panel">
+                        <div class="panel-title">Direct Connection</div>
+                        <p style="color:#fff; font-size:1rem; margin-bottom:20px;"><b>Email:</b> {{
+                            row.contact.split(',')[0].replace('Email: ', '') }}</p>
+                        <button class="btn-invite invite-btn"
+                            data-email="{{ row.contact.split(',')[0].replace('Email: ', '') }}"
+                            data-name="{{ row.name }}"
+                            style="border: none; cursor: pointer; font-family: 'Outfit';">Send Interview Invite</button>
+                        <button class="btn-invite pdf-btn"
+                            style="border: 1px solid var(--primary); background: transparent; color: var(--primary); margin-top: 10px; cursor: pointer; font-family: 'Outfit';">Export
+                            to PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    </div>
+
+    <script id="candidates-data" type="text/plain">{{ results | tojson | safe }}</script>
+    <script>
+        var candidatesData = JSON.parse(document.getElementById('candidates-data').textContent);
+        var allSkills = [];
+        candidatesData.forEach(function (r) {
+            var skillsStr = r.all_skills || r.skills || "None";
+            if (skillsStr !== "None" && typeof skillsStr === "string") {
+                allSkills.push.apply(allSkills, skillsStr.split(', '));
+            }
+        });
+        var skillCounts = {};
+        allSkills.forEach(function (s) { skillCounts[s] = (skillCounts[s] || 0) + 1; });
+        var sortedSkills = Object.entries(skillCounts).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 8);
+
+        var expCounts = { "Senior": 0, "Mid-Level": 0, "Fresher": 0, "Entry Level": 0 };
+        candidatesData.forEach(function (r) {
+            var exp = r.experience || "Entry Level";
+            if (typeof exp === "string") {
+                if (exp.indexOf("Senior") !== -1) expCounts["Senior"]++;
+                else if (exp.indexOf("Mid-Level") !== -1) expCounts["Mid-Level"]++;
+                else if (exp.indexOf("Fresher") !== -1) expCounts["Fresher"]++;
+                else expCounts["Entry Level"]++;
+            } else {
+                expCounts["Entry Level"]++;
+            }
+        });
+
+        var chartOptions = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#888' } } }
+        };
+
+        /* Robust Chart.js check */
+        if (typeof Chart === 'undefined') {
+            document.querySelectorAll('.chart-card').forEach(c => c.innerHTML += '<p style="color:#555;font-size:0.8rem;margin-top:20px;">Chart.js failed to load. Check your internet connection.</p>');
+        } else {
+            new Chart(document.getElementById('skillsChart'), {
+                type: 'bar',
+                data: { labels: sortedSkills.map(function (s) { return s[0] }), datasets: [{ data: sortedSkills.map(function (s) { return s[1] }), backgroundColor: '#06b6d4', borderRadius: 6 }] },
+                options: chartOptions
+            });
+            new Chart(document.getElementById('expChart'), {
+                type: 'doughnut',
+                data: { labels: Object.keys(expCounts), datasets: [{ data: Object.values(expCounts), backgroundColor: ['#a855f7', '#06b6d4', '#6366f1', '#475569'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#888' } } }, cutout: '75%' }
+            });
+        }
+
+        /* Filtering Logic */
+        var searchInput = document.getElementById('searchInput');
+        var seniorityFilter = document.getElementById('seniorityFilter');
+        var cards = document.querySelectorAll('.candidate-card');
+
+        function filterCandidates() {
+            var query = searchInput.value.toLowerCase();
+            var level = seniorityFilter.value;
+            cards.forEach(function (card) {
+                var name = card.getAttribute('data-name');
+                var skills = card.getAttribute('data-skills');
+                var exp = card.getAttribute('data-exp');
+                var matchesSearch = name.indexOf(query) !== -1 || skills.indexOf(query) !== -1;
+                var matchesLevel = (level === 'all') || exp.indexOf(level) !== -1;
+                card.style.display = (matchesSearch && matchesLevel) ? 'block' : 'none';
+            });
+        }
+        searchInput.addEventListener('input', filterCandidates);
+        seniorityFilter.addEventListener('change', filterCandidates);
+
+        /* PDF Export - uses event delegation */
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('pdf-btn')) {
+                var card = e.target.closest('.candidate-card');
+                card.classList.add('print-focus');
+                window.print();
+                card.classList.remove('print-focus');
+            }
+        });
+
+        /* Email Invite - uses event delegation */
+        document.addEventListener('click', function (e) {
+            if (e.target.classList.contains('invite-btn')) {
+                var email = e.target.getAttribute('data-email');
+                var name = e.target.getAttribute('data-name');
+                fetch('/send_invite', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email, name: name })
+                }).then(function (response) { return response.json(); })
+                    .then(function (data) {
+                        alert(data.message);
+                    }).catch(function () {
+                        alert("Error dispatching email.");
+                    });
+            }
+        });
+    </script>
+    <script src="/static/animation.js?v=1.1"></script>
+</body>
+
+</html>

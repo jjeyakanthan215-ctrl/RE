@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Shortlist — ESCTRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css?v=1.1">
+    <style>
+        .container {
+            position: relative; z-index: 1;
+            max-width: 800px; margin: 120px auto 60px; padding: 50px;
+            background: rgba(15, 15, 25, 0.7);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 32px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        .container h2 {
+            text-align: center; font-size: 2.2rem; font-weight: 900;
+            margin-bottom: 10px; 
+            background: linear-gradient(135deg, #fff 0%, #a855f7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; font-size: 1rem; margin-bottom: 40px; }
+        
+        .form-section { margin-bottom: 35px; }
+        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        label { color: #a855f7; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
+        
+        /* Template Selector */
+        .template-select {
+            background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2);
+            color: #d8b4fe; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem;
+            font-family: 'Outfit', sans-serif; cursor: pointer; outline: none;
+        }
+
+        textarea {
+            width: 100%; padding: 20px; border-radius: 18px;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            background: rgba(10, 10, 15, 0.8); color: #fff;
+            font-family: 'Outfit', sans-serif; font-size: 1rem;
+            resize: vertical; min-height: 140px; outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        textarea:focus { border-color: #a855f7; box-shadow: 0 0 25px rgba(168, 85, 247, 0.2); transform: translateY(-2px); }
+
+        .upload-zone {
+            position: relative;
+            border: 2px dashed rgba(168, 85, 247, 0.3);
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            background: rgba(168, 85, 247, 0.03);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .upload-zone.dragover { background: rgba(168, 85, 247, 0.1); border-color: #a855f7; transform: scale(1.02); }
+        .upload-zone svg { color: #a855f7; margin-bottom: 20px; transition: transform 0.3s ease; }
+        .upload-zone:hover svg { transform: translateY(-8px); }
+        .upload-zone p { color: #aaa; font-size: 1.1rem; margin: 0; }
+        .upload-zone span { color: #a855f7; font-weight: 700; }
+        #file-input { display: none; }
+        
+        #file-list { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+        .file-tag { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; border: 1px solid rgba(168, 85, 247, 0.4); }
+
+        .btn-submit {
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            width: 100%; padding: 20px;
+            margin-top: 20px; border: none; border-radius: 18px;
+            background: linear-gradient(135deg, #a855f7, #06b6d4);
+            color: #fff; font-weight: 800;
+            font-size: 1.2rem; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(168, 85, 247, 0.4);
+        }
+        .btn-submit:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(168, 85, 247, 0.5); }
+
+        .btn-back { text-decoration: none; color: #888; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; transition: color 0.3s; }
+        .btn-back:hover { color: #fff; }
+
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .loader-ring { width: 80px; height: 80px; border: 5px solid rgba(168, 85, 247, 0.1); border-top: 5px solid #a855f7; border-radius: 50%; animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loading-text { color: #fff; margin-top: 30px; font-weight: 700; letter-spacing: 2px; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="orb-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+
+    <nav class="navbar scrolled">
+        <a href="/" class="nav-brand" style="text-decoration:none;">
+            <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
+                <polygon points="12,2 22,20 2,20" fill="url(#sGrad)"/>
+                <defs><linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#a855f7"/><stop offset="100%" style="stop-color:#06b6d4"/></linearGradient></defs>
+            </svg>
+            <span class="brand-name" style="font-family:'Outfit'; font-weight:900;">ESCTRIX</span>
+        </a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            {% if current_user.is_authenticated %}
+                <span style="color: #a855f7; font-weight: 700; font-size: 0.95rem;">Hello, {{ current_user.name }}</span>
+                <a href="/logout" style="color: #888; text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-right: 10px;">Logout</a>
+            {% endif %}
+            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+                <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
+                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Home
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); color: #f9a8d4; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-size: 0.9rem;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2>Smart Screening</h2>
+        <p class="subtitle">Enter requirements or pick a template to begin.</p>
+        
+        <form action="/screen" method="POST" enctype="multipart/form-data" id="upload-form">
+            <div class="form-section">
+                <div class="label-row">
+                    <label>Job Requirements</label>
+                    <select class="template-select" id="template-selector">
+                        <option value="">Quick Templates</option>
+                        <option value="python">Python Developer</option>
+                        <option value="frontend">Frontend Engineer</option>
+                        <option value="data">Data Scientist</option>
+                        <option value="sales">Sales Executive</option>
+                    </select>
+                </div>
+                <textarea name="job_description" id="jd-area" placeholder="Describe the ideal candidate..." required></textarea>
+            </div>
+
+            <div class="form-section">
+                <label>Candidate Resumes</label>
+                <div class="upload-zone" id="drop-zone">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                    <p>Drag and drop PDF/DOCX here, or <span>browse files</span></p>
+                    <input type="file" name="resumes" id="file-input" multiple required>
+                    <div id="file-list"></div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">Analyze & Rank</button>
+        </form>
+    </div>
+
+    <div id="loading-overlay">
+        <div class="loader-ring"></div>
+        <div class="loading-text">SYSTEM IS ANALYZING CANDIDATES...</div>
+    </div>
+
+    <script>
+        const templates = {
+            python: "Python, Django, Flask, PostgreSQL, REST API, Git, 3+ years experience, Unit testing, Docker, AWS.",
+            frontend: "React, TypeScript, CSS3, HTML5, Redux, Responsive Design, 2+ years experience, Figma, Webpack, Performance Optimization.",
+            data: "Python, SQL, Machine Learning, Pandas, NumPy, Scikit-Learn, Statistics, Data Visualization, R, 4+ years experience.",
+            sales: "Sales, Communication, Negotiation, CRM, Lead Generation, Marketing, 2+ years experience, Customer Relationship, Team Player."
+        };
+
+        const selector = document.getElementById('template-selector');
+        const jdArea = document.getElementById('jd-area');
+
+        selector.addEventListener('change', () => {
+            if(templates[selector.value]) {
+                jdArea.value = templates[selector.value];
+            }
+        });
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileList = document.getElementById('file-list');
+        const form = document.getElementById('upload-form');
+        const loading = document.getElementById('loading-overlay');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); }));
+        ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('dragover')));
+        ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('dragleave')));
+        dropZone.addEventListener('drop', (e) => { fileInput.files = e.dataTransfer.files; updateFileList(); });
+        fileInput.addEventListener('change', updateFileList);
+
+        function updateFileList() {
+            fileList.innerHTML = '';
+            Array.from(fileInput.files).forEach(f => {
+                const tag = document.createElement('div');
+                tag.className = 'file-tag';
+                tag.textContent = f.name;
+                fileList.appendChild(tag);
+            });
+        }
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            loading.style.display = 'flex';
+            
+            const formData = new FormData(form);
+            try {
+                const response = await fetch('/screen', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                if (data.status === 'success') {
+                    window.location.href = data.redirect;
+                } else {
+                    loading.style.display = 'none';
+                    alert(data.error || 'An error occurred during screening.');
+                }
+            } catch (error) {
+                loading.style.display = 'none';
+                console.error('Error:', error);
+                alert('A system error occurred. Please try again.');
+            }
+        });
+    </script>
+    <script src="/static/animation.js?v=1.1"></script>
+</body>
+</html>

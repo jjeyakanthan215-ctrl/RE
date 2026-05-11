@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Analysis Results | ESCTRIX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .dashboard {
+            max-width: 1000px;
+            margin: 100px auto;
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .card {
+            background: rgba(17, 24, 39, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(12px);
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            font-size: 3rem;
+            font-weight: 700;
+            background: radial-gradient(closest-side, #111827 79%, transparent 80% 100%),
+                        conic-gradient(#06b6d4 var(--score, 0%), rgba(255,255,255,0.1) 0);
+        }
+        .pill {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 4px;
+            background: rgba(255,255,255,0.1);
+        }
+        .pill.match { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .pill.miss { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        h3 { margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 8px; font-size: 0.95rem; display:flex; justify-content:space-between; }
+        .back-btn { margin-top: 20px; display: inline-block; color: #a855f7; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="grid-bg"></div>
+    <div class="orb-wrapper">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <a href="/" style="text-decoration:none; display:flex; align-items:center; color:white;">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" width="28" height="28" style="margin-right:10px;">
+                    <polygon points="12,2 22,20 2,20" fill="url(#logoGrad)" />
+                </svg>
+                <span class="brand-name">ESCTRIX</span>
+            </a>
+        </div>
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+            <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
+                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="card" style="text-align: center;">
+            <h3>Overall Score</h3>
+            <div class="score-circle" style="--score: {{ result.total_score }}%;">{{ result.total_score }}</div>
+            <p><strong>File:</strong> {{ result.filename }}</p>
+            <br>
+            <h3 style="text-align:left;">Score Breakdown</h3>
+            <ul>
+                <li><span>Keywords Match</span> <span>{{ result.breakdown.keyword_score }} / 25</span></li>
+                <li><span>Relevance</span> <span>{{ result.breakdown.relevance_score }} / 15</span></li>
+                <li><span>Experience</span> <span>{{ result.breakdown.exp_score }} / 15</span></li>
+                <li><span>Section Structure</span> <span>{{ result.breakdown.section_score }} / 10</span></li>
+                <li><span>Education</span> <span>{{ result.breakdown.edu_score }} / 10</span></li>
+                <li><span>Contact Info</span> <span>{{ result.breakdown.contact_score }} / 5</span></li>
+                <li><span>Action Verbs</span> <span>{{ result.breakdown.action_verb_score }} / 5</span></li>
+                <li><span>Word Count</span> <span>{{ result.breakdown.length_score }} / 5</span></li>
+                <li><span>File Format</span> <span>{{ result.breakdown.format_score }} / 5</span></li>
+            </ul>
+        </div>
+        
+        <div class="card">
+            <h3>Keyword Analysis</h3>
+            <div style="margin-bottom:20px;">
+                <h4 style="margin-bottom:10px; color:#d1d5db;">Matched Skills</h4>
+                {% if result.matched_skills %}
+                    {% for skill in result.matched_skills %}
+                        <span class="pill match">✓ {{ skill }}</span>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:#9ca3af; font-size:0.9rem;">No specific technical skills matched.</p>
+                {% endif %}
+            </div>
+            
+            <div style="margin-bottom:20px;">
+                <h4 style="margin-bottom:10px; color:#d1d5db;">Missing Skills (Add these!)</h4>
+                {% if result.missing_skills %}
+                    {% for skill in result.missing_skills %}
+                        <span class="pill miss" style="display:inline-flex; align-items:center;">
+                            ✗ {{ skill }}
+                            <a href="https://www.coursera.org/search?query={{ skill }}" target="_blank" title="Learn {{ skill }} on Coursera" style="color:white; text-decoration:none; margin-left:6px; background:rgba(255,255,255,0.2); padding:2px 6px; border-radius:4px; font-size:0.7rem;">Learn</a>
+                        </span>
+                    {% endfor %}
+                {% else %}
+                    <p style="color:#9ca3af; font-size:0.9rem;">No missing skills detected based on the JD.</p>
+                {% endif %}
+            </div>
+
+            <h3>Feedback & Improvements</h3>
+            <ul>
+                <li><strong>Experience:</strong> {{ result.feedback.experience }}</li>
+                <li><strong>Education:</strong> {{ result.feedback.education }}</li>
+                <li><strong>Length:</strong> {{ result.feedback.length }}</li>
+                <li><strong>Action Verbs:</strong> {{ result.feedback.action_verbs }}</li>
+                {% if result.missing_sections %}
+                <li><strong style="color:#fca5a5;">Missing Sections:</strong> {{ result.missing_sections | join(', ') }}</li>
+                {% endif %}
+                {% if result.missing_contact %}
+                <li><strong style="color:#fca5a5;">Missing Contact Info:</strong> {{ result.missing_contact | join(', ') }}</li>
+                {% endif %}
+            </ul>
+            
+            {% if result.interview_questions %}
+            <h3 style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">Interview Prep</h3>
+            <p style="color: #9ca3af; font-size: 0.9rem; margin-bottom: 15px;">Based on your skills, recruiters might ask:</p>
+            <ul style="list-style: none; padding: 0;">
+                {% for q in result.interview_questions %}
+                <li style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 0.95rem; border-left: 3px solid #a855f7;">
+                    {{ q }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 24px;">
+                <p style="color: #9ca3af; font-size: 0.85rem; text-align: center; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">Next Steps</p>
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                    <!-- Mock Interview -->
+                    <a href="/mock-interview" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(168,85,247,0.05)); border: 1px solid rgba(168,85,247,0.35); color: #a855f7; padding: 11px 20px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(168,85,247,0.25)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                        <svg viewBox="0 0 24 24" fill="none" width="17" height="17" stroke="currentColor" stroke-width="2"><path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+                        AI Mock Interview
+                    </a>
+                    <!-- Coding Test -->
+                    <a href="/coding-test" style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.05)); border: 1px solid rgba(6,182,212,0.35); color: #06b6d4; padding: 11px 20px; border-radius: 10px; font-weight: 700; text-decoration: none; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(6,182,212,0.25)'" onmouseout="this.style.transform='none'; this.style.boxShadow='none'">
+                        <svg viewBox="0 0 24 24" fill="none" width="17" height="17" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        Live Coding Test
+                    </a>
+                    <!-- PDF Download -->
+                    <button onclick="downloadPDF()" style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #e2e8f0; padding: 11px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.9rem; font-family: inherit; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                        <svg viewBox="0 0 24 24" width="17" height="17" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Download PDF
+                    </button>
+                    <!-- Check another -->
+                    <a href="/ats-check" style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); color: #64748b; padding: 11px 20px; border-radius: 10px; font-weight: 600; text-decoration: none; font-size: 0.9rem;">
+                        ← Check Another Resume
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(10,10,15,0.9); z-index:9999; align-items:center; justify-content:center; color:white; font-weight:700;">Analyzing...</div>
+
+    <script src="/static/animation.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script>
+        function downloadPDF() {
+            const element = document.querySelector('.dashboard');
+            const opt = {
+                margin:       0.5,
+                filename:     'ESCTRIX_ATS_Report.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#0f172a' },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+    <script src="/static/animation.js"></script>
+</body>
+</html>
