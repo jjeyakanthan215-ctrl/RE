@@ -34,9 +34,21 @@ logging.getLogger('werkzeug').name = 'ESCTRIX'
 log = logging.getLogger('ESCTRIX')
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'esctrix-super-secret-key'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///esctrix.db'
+# Configuration
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'esctrix.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+
+# Create tables and initialize app context
+with app.app_context():
+    try:
+        db.create_all()
+        logger.info("Database tables verified/created successfully.")
+    except Exception as e:
+        logger.error(f"Error initializing database: {e}")
 
 from database import db, User, ScreeningSession, Candidate, ATSCheck
 
@@ -45,7 +57,7 @@ login_manager.login_view = 'login'
 login_manager.init_app(app)
 
 # Database setup
-db.init_app(app)
+# (db already initialized above)
 
 @login_manager.user_loader
 def load_user(user_id):
