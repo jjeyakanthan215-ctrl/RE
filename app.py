@@ -34,6 +34,8 @@ logging.getLogger('werkzeug').name = 'ESCTRIX'
 log = logging.getLogger('ESCTRIX')
 
 app = Flask(__name__)
+from database import db, User, ScreeningSession, Candidate, ATSCheck
+
 # Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
@@ -49,8 +51,6 @@ with app.app_context():
         logger.info("Database tables verified/created successfully.")
     except Exception as e:
         logger.error(f"Error initializing database: {e}")
-
-from database import db, User, ScreeningSession, Candidate, ATSCheck
 
 login_manager = LoginManager()
 login_manager.login_view = 'login'
