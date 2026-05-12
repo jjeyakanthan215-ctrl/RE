@@ -40,3 +40,4 @@ resume_processor.log
 # OS
 .DS_Store
 Thumbs.db
+*.exe
