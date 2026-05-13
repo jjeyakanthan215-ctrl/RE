@@ -127,30 +127,24 @@ def screen():
 
         import concurrent.futures
 
-        # Save all files first
-        saved_files = []
+        # Process sequentially to avoid Render Memory limits (OOM)
         for file in files:
             if file.filename == '': continue
             temp_path = os.path.join(upload_dir, file.filename)
             file.save(temp_path)
-            saved_files.append((temp_path, file.filename))
-
-        # Process in parallel to avoid timeouts on Render
-        def process_single_resume(file_info):
-            path, name = file_info
             try:
-                data = process_resume(path, job_description)
-                return data
+                processed_data = process_resume(temp_path, job_description)
+                if processed_data:
+                    results.append(processed_data)
             except Exception as e:
-                logger.error(f"Error processing resume {name}: {e}")
-                return None
+                logger.error(f"Error processing resume {file.filename}: {e}")
+                continue
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            future_to_resume = {executor.submit(process_single_resume, f): f for f in saved_files}
-            for future in concurrent.futures.as_completed(future_to_resume):
-                data = future.result()
-                if data:
-                    results.append(data)
+        if not results:
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return jsonify({"status": "error", "error": "Could not extract text from any uploaded resumes. The files might be corrupted or image-based. Please try different files."})
+            flash("Could not extract text from any uploaded resumes. Please try different files.")
+            return redirect(url_for('screen'))
 
         results.sort(key=lambda x: x['score'], reverse=True)
         
