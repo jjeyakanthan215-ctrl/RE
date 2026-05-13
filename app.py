@@ -125,17 +125,32 @@ def screen():
         upload_dir = "uploaded_resumes"
         os.makedirs(upload_dir, exist_ok=True)
 
+        import concurrent.futures
+
+        # Save all files first
+        saved_files = []
         for file in files:
             if file.filename == '': continue
             temp_path = os.path.join(upload_dir, file.filename)
             file.save(temp_path)
+            saved_files.append((temp_path, file.filename))
+
+        # Process in parallel to avoid timeouts on Render
+        def process_single_resume(file_info):
+            path, name = file_info
             try:
-                processed_data = process_resume(temp_path, job_description)
-                if processed_data:
-                    results.append(processed_data)
+                data = process_resume(path, job_description)
+                return data
             except Exception as e:
-                logger.error(f"Error processing resume {file.filename}: {e}")
-                continue
+                logger.error(f"Error processing resume {name}: {e}")
+                return None
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+            future_to_resume = {executor.submit(process_single_resume, f): f for f in saved_files}
+            for future in concurrent.futures.as_completed(future_to_resume):
+                data = future.result()
+                if data:
+                    results.append(data)
 
         results.sort(key=lambda x: x['score'], reverse=True)
         
