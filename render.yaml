@@ -1,11 +1,7 @@
 services:
   - type: web
     name: esctrix
-    runtime: python
-    buildCommand: pip install -r requirements.txt && python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords'); nltk.download('averaged_perceptron_tagger')"
-    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    runtime: docker
     envVars:
       - key: SECRET_KEY
         generateValue: true
-      - key: PYTHON_VERSION
-        value: 3.11.0
