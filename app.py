@@ -45,7 +45,17 @@ from database import db, User, ScreeningSession, Candidate, ATSCheck
 # Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'esctrix.db')
+
+# Check if Render has provided a PostgreSQL database URL
+db_url = os.environ.get('DATABASE_URL')
+if db_url:
+    # SQLAlchemy 1.4+ requires 'postgresql://' instead of 'postgres://'
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
+else:
+    # Fallback to local SQLite if no DB URL is found
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'esctrix.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
