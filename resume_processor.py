@@ -11,8 +11,11 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from PIL import Image
 import pytesseract
-
 import pypdfium2 as pdfium
+import shutil
+
+# Check if tesseract is available in the system PATH
+TESSERACT_AVAILABLE = shutil.which("tesseract") is not None
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -66,6 +69,10 @@ download_nltk_data()
 def ocr_pdf_fallback(file_path):
     """Converts PDF pages to images using pypdfium2 and runs OCR. Robust for image-based PDFs."""
     try:
+        if not TESSERACT_AVAILABLE:
+            logger.warning("Tesseract binary not found. OCR fallback skipped.")
+            return "ERR_TESSERACT_NOT_FOUND"
+
         logger.info(f"Running OCR fallback on PDF (pypdfium2): {file_path}")
         pdf = pdfium.PdfDocument(file_path)
         full_text = ""
@@ -129,6 +136,8 @@ def extract_text(file_path):
             if len(clean_text) < 30:
                 logger.info("PDF has very little extractable text. Attempting OCR fallback...")
                 ocr_text = ocr_pdf_fallback(file_path)
+                if ocr_text == "ERR_TESSERACT_NOT_FOUND":
+                    return "OCR_FAILED_TESSERACT_NOT_FOUND"
                 if ocr_text:
                     text = ocr_text
                     
@@ -164,6 +173,8 @@ def extract_text(file_path):
         elif ext == ".doc":
             return "UNSUPPORTED_FORMAT_DOC"
         elif ext in [".png", ".jpg", ".jpeg"]:
+            if not TESSERACT_AVAILABLE:
+                return "OCR_FAILED_TESSERACT_NOT_FOUND"
             try:
                 img = Image.open(file_path)
                 text = pytesseract.image_to_string(img)

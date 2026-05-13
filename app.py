@@ -17,13 +17,19 @@ from ats_checker import check_ats_score
 from coding_bp import coding_bp
 from interview_bp import interview_bp
 
-import nltk
-try:
-    nltk.download('punkt')
-    nltk.download('stopwords')
-    nltk.download('averaged_perceptron_tagger')
-except:
-    pass
+# NLTK data is typically pre-downloaded in build phase, but we keep this as a safe fallback
+def init_nltk():
+    try:
+        import nltk
+        for res in ['punkt', 'stopwords', 'averaged_perceptron_tagger']:
+            try:
+                nltk.data.find(f'tokenizers/{res}' if res == 'punkt' else f'corpora/{res}')
+            except (LookupError, AttributeError):
+                nltk.download(res)
+    except Exception:
+        pass
+
+init_nltk()
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -242,7 +248,7 @@ def ats_check():
             return redirect(url_for('ats_result'))
         except Exception as e:
             logger.error(f"Error checking ATS score: {e}")
-            return render_template("ats_check.html", error="An error occurred while processing the resume.")
+            return render_template("ats_check.html", error=f"Processing Error: {str(e)}")
             
     return render_template("ats_check.html")
 
@@ -295,14 +301,16 @@ def send_invite():
     
     return jsonify({"status": "success", "message": f"Email successfully dispatched to {email}"})
 
+# Register Blueprints (Shared between Dev and Production)
+from admin import admin_bp
+app.register_blueprint(admin_bp)
+app.register_blueprint(coding_bp)
+app.register_blueprint(interview_bp)
+
 if __name__ == "__main__":
     os.makedirs("uploaded_resumes", exist_ok=True)
     with app.app_context():
         db.create_all()
-    from admin import admin_bp
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(coding_bp)
-    app.register_blueprint(interview_bp)
     
     print("\n" + "[+] " + "="*50)
     print("   ESCTRIX PLATFORM - SMART RECRUITMENT ENGINE   ")
@@ -311,9 +319,3 @@ if __name__ == "__main__":
     
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
-else:
-    # For production/gunicorn
-    from admin import admin_bp
-    app.register_blueprint(admin_bp)
-    app.register_blueprint(coding_bp)
-    app.register_blueprint(interview_bp)
