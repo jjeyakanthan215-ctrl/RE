@@ -44,18 +44,8 @@ from database import db, User, ScreeningSession, Candidate, ATSCheck
 
 # Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
-
-# Check if Render has provided a PostgreSQL database URL
-db_url = os.environ.get('DATABASE_URL')
-if db_url:
-    # SQLAlchemy 1.4+ requires 'postgresql://' instead of 'postgres://'
-    if db_url.startswith("postgres://"):
-        db_url = db_url.replace("postgres://", "postgresql://", 1)
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-else:
-    # Fallback to local SQLite if no DB URL is found
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'esctrix.db')
+app.config['SECRET_KEY'] = 'dev-key-123'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'esctrix.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -137,18 +127,32 @@ def screen():
 
         import concurrent.futures
 
-        # Process sequentially to avoid Render Memory limits (OOM)
+        import concurrent.futures
+
+        # Save all files first
+        saved_files = []
         for file in files:
             if file.filename == '': continue
             temp_path = os.path.join(upload_dir, file.filename)
             file.save(temp_path)
+            saved_files.append((temp_path, file.filename))
+
+        # Process in parallel using all available cores for maximum local speed
+        def process_single_resume(file_info):
+            path, name = file_info
             try:
-                processed_data = process_resume(temp_path, job_description)
-                if processed_data:
-                    results.append(processed_data)
+                data = process_resume(path, job_description)
+                return data
             except Exception as e:
-                logger.error(f"Error processing resume {file.filename}: {e}")
-                continue
+                logger.error(f"Error processing resume {name}: {e}")
+                return None
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=None) as executor:
+            future_to_resume = {executor.submit(process_single_resume, f): f for f in saved_files}
+            for future in concurrent.futures.as_completed(future_to_resume):
+                data = future.result()
+                if data:
+                    results.append(data)
 
         if not results:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':

@@ -1,7 +1,0 @@
-services:
-  - type: web
-    name: esctrix
-    runtime: docker
-    envVars:
-      - key: SECRET_KEY
-        generateValue: true
