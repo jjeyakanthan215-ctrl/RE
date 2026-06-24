@@ -4,8 +4,6 @@ import csv
 import nltk 
 import uuid
 import json
-import PyPDF2
-import pypdfium2 as pdfium
 from datetime import datetime, timezone
 from flask import Flask, request, render_template, redirect, url_for, flash, make_response, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
