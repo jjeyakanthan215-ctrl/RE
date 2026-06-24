@@ -3,7 +3,7 @@ import re
 import logging
 import datetime
 import pdfplumber
-import PyPDF2
+from pypdf import PdfReader
 import docx
 import docx2txt
 import nltk
@@ -108,14 +108,14 @@ def extract_text(file_path):
             # Step 2: Try pypdfium2 if text is still too short
             if len(text.strip()) < 50:
                 try:
-                    # Try PyPDF2 as a standard fallback
+                    # Try pypdf as a standard fallback
                     with open(file_path, "rb") as f:
-                        reader = PyPDF2.PdfReader(f)
+                        reader = PdfReader(f)
                         for page in reader.pages:
                             extracted = page.extract_text()
                             if extracted: text += extracted + " "
                 except Exception as pypdf_e:
-                    logger.error(f"PyPDF2 error: {pypdf_e}")
+                    logger.error(f"pypdf error: {pypdf_e}")
 
             # Step 3: Try pypdfium2 if text is still too short
             if len(text.strip()) < 50:

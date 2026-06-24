@@ -1,10 +1,12 @@
+
 import os
+import warnings_config
+import warnings
 import io
 import csv
-import nltk 
+import concurrent.futures
 import uuid
 import json
-from datetime import datetime, timezone
 from flask import Flask, request, render_template, redirect, url_for, flash, make_response, session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
@@ -15,6 +17,8 @@ from ats_checker import check_ats_score
 from coding_bp import coding_bp
 from interview_bp import interview_bp
 
+
+
 # NLTK data is typically pre-downloaded in build phase, but we keep this as a safe fallback
 def init_nltk():
     try:
@@ -23,7 +27,7 @@ def init_nltk():
             try:
                 nltk.data.find(f'tokenizers/{res}' if res == 'punkt' else f'corpora/{res}')
             except (LookupError, AttributeError):
-                nltk.download(res)
+                nltk.download(res, quiet=True)
     except Exception:
         pass
 
@@ -97,6 +101,7 @@ def signup():
         if user:
             flash('Email already exists.')
             return redirect(url_for('signup'))
+        # pyrefly: ignore [unexpected-keyword]
         new_user = User(email=email, name=name, password=generate_password_hash(password), role=role)
         db.session.add(new_user)
         db.session.commit()
@@ -122,10 +127,6 @@ def screen():
         results = []
         upload_dir = "uploaded_resumes"
         os.makedirs(upload_dir, exist_ok=True)
-
-        import concurrent.futures
-
-        import concurrent.futures
 
         # Save all files first
         saved_files = []
@@ -161,10 +162,12 @@ def screen():
         results.sort(key=lambda x: x['score'], reverse=True)
         
         session_id = str(uuid.uuid4())
+        # pyrefly: ignore [unexpected-keyword]
         new_session = ScreeningSession(id=session_id, user_id=current_user.id, job_description=job_description)
         db.session.add(new_session)
 
         for processed_data in results:
+            # pyrefly: ignore [unexpected-keyword]
             cand_entry = Candidate(session_id=session_id, data=json.dumps(processed_data))
             db.session.add(cand_entry)
             
@@ -256,11 +259,17 @@ def ats_check():
             
             # Save to ATS History
             if current_user.is_authenticated:
+                # pyrefly: ignore [unexpected-keyword]
                 ats_check_entry = ATSCheck(
+                    # pyrefly: ignore [unexpected-keyword]
                     user_id=current_user.id,
+                    # pyrefly: ignore [unexpected-keyword]
                     job_description=job_description,
+                    # pyrefly: ignore [unexpected-keyword]
                     resume_filename=resume_file.filename,
+                    # pyrefly: ignore [unexpected-keyword]
                     score=result.get('total_score', 0),
+                    # pyrefly: ignore [unexpected-keyword]
                     result_data=json.dumps(result)
                 )
                 db.session.add(ats_check_entry)

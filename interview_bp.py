@@ -11,7 +11,6 @@ No external API key required.
 from flask import Blueprint, render_template, request, jsonify, session
 from flask_login import login_required, current_user
 import json
-import re
 
 interview_bp = Blueprint('interview', __name__)
 

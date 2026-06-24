@@ -1,0 +1,45 @@
+//
+In this project, we are actually NOT using any external APIs (like Google Gemini or OpenAI) for the core ATS or Interview evaluations, even though the generated presentation briefly mentioned it as a placeholder.
+
+Instead, the project uses a custom, offline "Smart Simulation Engine" and Natural Language Processing (NLP) built directly into your Python backend.
+
+Here is exactly what the project uses instead of an external API:
+
+NLTK (Natural Language Toolkit):
+ Used for text tokenization and identifying parts of speech
+(like action verbs vs. weak verbs).
+
+PyPDF2 & pdfplumber & pytesseract:
+Used to extract text locally from uploaded resumes, 
+including OCR (Optical Character Recognition) for image-based PDFs.
+
+Custom Heuristic Algorithms:
+
+The ATS Checker (ats_checker.py) 
+uses complex internal scoring algorithms based on 10 modules(keyword matching, experience relevance, action verbs, etc.)
+by comparing the extracted resume text against predefined tech skills.
+
+The Interview Module (interview_bp.py)
+evaluates answers using keyword density, confidence indicators (e.g., using "I", "specifically"),
+length scoring, and evasion detection (e.g., detecting "I don't know") rather than an external AI model.
+
+action verbs
+
+worst :
+"responsible for"
+"helped with"
+"assisted in"
+"worked on"
+"duties included"
+good :
+Creation & Development: 
+developed, architected, engineered, designed, built, created, innovated, constructed.
+Execution & Delivery: 
+eployed, implemented, launched, executed, delivered, generated.
+Leadership & Management: 
+spearheaded, managed, led, directed, orchestrated, supervised, mentored.
+Improvement & Optimization: 
+optimized, transformed, maximized, reduced, increased, modernized, redesigned, streamlined, upgraded, accelerated, achieved.
+Problem Solving & Strategy: 
+resolved, integrated, navigated, negotiated, pioneered, secured, solved, structured, tested, validated, visualized.
+

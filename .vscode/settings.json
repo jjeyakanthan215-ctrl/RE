@@ -1,0 +1,10 @@
+{
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportCallIssue": "none",
+        "reportGeneralTypeIssues": "none",
+        "reportOptionalMemberAccess": "none",
+        "reportUnboundVariable": "none",
+        "reportArgumentType": "none"
+    }
+}
