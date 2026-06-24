@@ -14,8 +14,15 @@ import pytesseract
 import pypdfium2 as pdfium
 import shutil
 
-# Check if tesseract is available in the system PATH
-TESSERACT_AVAILABLE = shutil.which("tesseract") is not None
+# Check if tesseract is available in the system PATH or common Windows path
+TESSERACT_AVAILABLE = False
+if shutil.which("tesseract"):
+    TESSERACT_AVAILABLE = True
+else:
+    common_tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    if os.path.exists(common_tesseract_path):
+        pytesseract.pytesseract.tesseract_cmd = common_tesseract_path
+        TESSERACT_AVAILABLE = True
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -171,7 +178,18 @@ def extract_text(file_path):
                 logger.error(f"Text file error: {e}")
                 text = ""
         elif ext == ".doc":
-            return "UNSUPPORTED_FORMAT_DOC"
+            logger.info(f"Processing .doc file via binary extraction: {file_path}")
+            try:
+                with open(file_path, "rb") as f:
+                    b = f.read()
+                import string
+                valid_chars = set(string.printable.encode())
+                extracted = [chr(c) for c in b if c in valid_chars]
+                text = "".join(extracted)
+                text = re.sub(r'\s+', ' ', text)
+            except Exception as e:
+                logger.error(f".doc extraction failed: {e}")
+                text = ""
         elif ext in [".png", ".jpg", ".jpeg"]:
             if not TESSERACT_AVAILABLE:
                 return "OCR_FAILED_TESSERACT_NOT_FOUND"
