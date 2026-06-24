@@ -12,12 +12,12 @@ let mouse = {
     radius: 150
 };
 
-window.addEventListener('mousemove', function(event) {
+window.addEventListener('mousemove', function (event) {
     mouse.x = event.x;
     mouse.y = event.y;
 });
 
-window.addEventListener('mouseout', function() {
+window.addEventListener('mouseout', function () {
     mouse.x = null;
     mouse.y = null;
 });
@@ -31,9 +31,9 @@ resize();
 
 for (let i = 0; i < 80; i++) {
     particles.push({
-        x: Math.random() * w, 
+        x: Math.random() * w,
         y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.5, 
+        vx: (Math.random() - 0.5) * 0.5,
         vy: (Math.random() - 0.5) * 0.5,
         r: Math.random() * 2 + 1
     });
@@ -43,13 +43,13 @@ let animationFrameId;
 
 function draw() {
     ctx.clearRect(0, 0, w, h);
-    
+
     for (let i = 0; i < particles.length; i++) {
         let p = particles[i];
-        
-        p.x += p.vx; 
+
+        p.x += p.vx;
         p.y += p.vy;
-        
+
         if (p.x < 0 || p.x > w) p.vx *= -1;
         if (p.y < 0 || p.y > h) p.vy *= -1;
 
@@ -74,7 +74,7 @@ function draw() {
             let dx = p.x - q.x;
             let dy = p.y - q.y;
             let distSq = dx * dx + dy * dy;
-            
+
             if (distSq < 150 * 150) {
                 let dist = Math.sqrt(distSq);
                 ctx.beginPath();
@@ -85,7 +85,7 @@ function draw() {
                 ctx.stroke();
             }
         }
-        
+
         if (mouse.x !== null && mouse.y !== null) {
             let dx = p.x - mouse.x;
             let dy = p.y - mouse.y;

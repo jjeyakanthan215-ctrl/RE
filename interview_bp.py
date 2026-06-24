@@ -2,7 +2,7 @@
 ESCTRIX - AI Mock Interview Module
 Blueprint: interview_bp
 Routes: /mock-interview (GET), /mock-interview/respond (POST)
-
+ 
 Uses a Smart Simulation Engine: reads the candidate's ATS interview
 questions from session, presents them one-by-one, analyzes the
 user's answers via keyword matching, and grades the response.

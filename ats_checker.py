@@ -11,7 +11,7 @@ from resume_processor import (
     extract_resume_sections,
     generate_interview_questions
 )
-
+ 
 def check_ats_score(file_path, job_description):
     """
     Advanced ATS Score logic based on 10 modules.
