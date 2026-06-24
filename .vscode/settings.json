@@ -6,5 +6,8 @@
         "reportOptionalMemberAccess": "none",
         "reportUnboundVariable": "none",
         "reportArgumentType": "none"
-    }
+    },
+    "cSpell.words": [
+        "pdfium"
+    ]
 }

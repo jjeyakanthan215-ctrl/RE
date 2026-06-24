@@ -1,33 +1,32 @@
 
 import os
-import warnings_config
 import warnings
 import io
 import csv
-import concurrent.futures
 import uuid
 import json
-from flask import Flask, request, render_template, redirect, url_for, flash, make_response, session, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, request, render_template, redirect, url_for, flash, make_response, session, jsonify # type: ignore
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user # type: ignore
+from werkzeug.security import generate_password_hash, check_password_hash  # type: ignore
 import logging
 from resume_processor import process_resume
 from ats_checker import check_ats_score
 from coding_bp import coding_bp
 from interview_bp import interview_bp
-
-
+from database import db, User, ScreeningSession, Candidate, ATSCheck
 
 # NLTK data is typically pre-downloaded in build phase, but we keep this as a safe fallback
+warnings.filterwarnings("ignore", category=UserWarning)
+
+
 def init_nltk():
     try:
-        import nltk
+        import nltk # type: ignore
         for res in ['punkt', 'stopwords', 'averaged_perceptron_tagger']:
             try:
                 nltk.data.find(f'tokenizers/{res}' if res == 'punkt' else f'corpora/{res}')
             except (LookupError, AttributeError):
-                nltk.download(res, quiet=True)
+                nltk.download(res)
     except Exception:
         pass
 
@@ -42,7 +41,6 @@ logging.getLogger('werkzeug').name = 'ESCTRIX'
 log = logging.getLogger('ESCTRIX')
 
 app = Flask(__name__)
-from database import db, User, ScreeningSession, Candidate, ATSCheck
 
 # Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -101,7 +99,6 @@ def signup():
         if user:
             flash('Email already exists.')
             return redirect(url_for('signup'))
-        # pyrefly: ignore [unexpected-keyword]
         new_user = User(email=email, name=name, password=generate_password_hash(password), role=role)
         db.session.add(new_user)
         db.session.commit()
@@ -127,11 +124,12 @@ def screen():
         results = []
         upload_dir = "uploaded_resumes"
         os.makedirs(upload_dir, exist_ok=True)
+        import concurrent.futures
 
         # Save all files first
         saved_files = []
         for file in files:
-            if file.filename == '': continue
+            if file.filename == '': continue  # noqa: E701
             temp_path = os.path.join(upload_dir, file.filename)
             file.save(temp_path)
             saved_files.append((temp_path, file.filename))
@@ -162,12 +160,10 @@ def screen():
         results.sort(key=lambda x: x['score'], reverse=True)
         
         session_id = str(uuid.uuid4())
-        # pyrefly: ignore [unexpected-keyword]
         new_session = ScreeningSession(id=session_id, user_id=current_user.id, job_description=job_description)
         db.session.add(new_session)
 
         for processed_data in results:
-            # pyrefly: ignore [unexpected-keyword]
             cand_entry = Candidate(session_id=session_id, data=json.dumps(processed_data))
             db.session.add(cand_entry)
             
@@ -202,10 +198,10 @@ def results_view():
 @login_required
 def candidate_detail(index):
     session_id = session.get('last_screening_id')
-    if not session_id: return redirect(url_for('screen'))
+    if not session_id : return redirect(url_for('screen'))  # noqa: E701
     
     screening_session = db.session.get(ScreeningSession, session_id)
-    if not screening_session: return redirect(url_for('screen'))
+    if not screening_session: return redirect(url_for('screen'))  # noqa: E701
     
     candidates = Candidate.query.filter_by(session_id=session_id).all()
     results_list = [json.loads(c.data) for c in candidates]
@@ -220,13 +216,13 @@ def candidate_detail(index):
 @login_required
 def export_csv():
     session_id = session.get('last_screening_id')
-    if not session_id: return redirect(url_for('screen'))
+    if not session_id: return redirect(url_for('screen'))  # noqa: E701
     
     candidates = Candidate.query.filter_by(session_id=session_id).all()
     results_list = [json.loads(c.data) for c in candidates]
     results_list.sort(key=lambda x: x['score'], reverse=True)
     
-    if not results_list: return redirect(url_for('results_view'))
+    if not results_list: return redirect(url_for('results_view'))  # noqa: E701
     
     si = io.StringIO()
     cw = csv.DictWriter(si, fieldnames=results_list[0].keys())
@@ -259,17 +255,11 @@ def ats_check():
             
             # Save to ATS History
             if current_user.is_authenticated:
-                # pyrefly: ignore [unexpected-keyword]
                 ats_check_entry = ATSCheck(
-                    # pyrefly: ignore [unexpected-keyword]
                     user_id=current_user.id,
-                    # pyrefly: ignore [unexpected-keyword]
                     job_description=job_description,
-                    # pyrefly: ignore [unexpected-keyword]
                     resume_filename=resume_file.filename,
-                    # pyrefly: ignore [unexpected-keyword]
                     score=result.get('total_score', 0),
-                    # pyrefly: ignore [unexpected-keyword]
                     result_data=json.dumps(result)
                 )
                 db.session.add(ats_check_entry)
@@ -325,14 +315,14 @@ def send_invite():
     print("\n" + "="*50)
     print("🚀 AUTOMATED SYSTEM EMAIL DISPATCHED 🚀")
     print(f"To: {email}")
-    print(f"Subject: Interview Invitation - ESCTRIX Platform")
+    print("Subject: Interview Invitation - ESCTRIX Platform")
     print(f"Body: Dear {candidate_name},\n\nWe were impressed by your profile. Please use the link below to schedule an interview with our technical team.\n\nBest,\nThe Hiring Team")
     print("="*50 + "\n")
     
     return jsonify({"status": "success", "message": f"Email successfully dispatched to {email}"})
 
 # Register Blueprints (Shared between Dev and Production)
-from admin import admin_bp
+from admin import admin_bp  # noqa: E402
 app.register_blueprint(admin_bp)
 app.register_blueprint(coding_bp)
 app.register_blueprint(interview_bp)
