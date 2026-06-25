@@ -1,17 +1,18 @@
+# sourcery skip: remove-duplicate-set-key
 import os
 import re
 import logging
 import datetime
-import pdfplumber
-from pypdf import PdfReader
-import docx
-import docx2txt
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
-from PIL import Image
-import pytesseract
-import pypdfium2 as pdfium
+import pdfplumber # type: ignore
+from pypdf import PdfReader # type: ignore
+import docx # type: ignore
+import docx2txt # type: ignore
+import nltk # type: ignore
+from nltk.tokenize import word_tokenize # type: ignore
+from nltk.corpus import stopwords# type: ignore
+from PIL import Image # type: ignore
+import pytesseract # type: ignore
+import pypdfium2 as pdfium # type: ignore
 import shutil
 
 # Check if tesseract is available in the system PATH or common Windows path
@@ -73,7 +74,7 @@ def download_nltk_data():
 
 download_nltk_data()
 
-def ocr_pdf_fallback(file_path):
+def ocr_pdf_fallback(file_path):  # sourcery skip: use-named-expression
     """Converts PDF pages to images using pypdfium2 and runs OCR. Robust for image-based PDFs."""
     try:
         if not TESSERACT_AVAILABLE:
@@ -97,7 +98,7 @@ def ocr_pdf_fallback(file_path):
         logger.error(f"PDF OCR Fallback Error: {str(e)}")
         return ""
 
-def extract_text(file_path):
+def extract_text(file_path):  # sourcery skip: low-code-quality, use-fstring-for-concatenation, use-named-expression
     ext = os.path.splitext(file_path)[1].lower()
     text = ""
     try:
@@ -108,7 +109,7 @@ def extract_text(file_path):
                     for page in pdf.pages:
                         extracted = page.extract_text()
                         if extracted:
-                            text += extracted + " "
+                            text += extracted + " " # type: ignore
             except Exception as pdf_e:
                 logger.error(f"pdfplumber error: {pdf_e}")
 
@@ -120,7 +121,7 @@ def extract_text(file_path):
                         reader = PdfReader(f)
                         for page in reader.pages:
                             extracted = page.extract_text()
-                            if extracted: text += extracted + " "
+                            if extracted: text += extracted + " "  # noqa: E701
                 except Exception as pypdf_e:
                     logger.error(f"pypdf error: {pypdf_e}")
 
@@ -206,7 +207,7 @@ def extract_text(file_path):
     return text.strip()
 
 def preprocess_text(text):
-    if not text: return []
+    if not text: return []  # noqa: E701
     stop_words = set(stopwords.words('english'))
     words = word_tokenize(text.lower())
     return [w for w in words if w.isalnum() and w not in stop_words]
@@ -223,7 +224,7 @@ def extract_contact_info(text):
         phone = "".join(p) if isinstance(p, tuple) else p
     return email, phone.strip()
 
-def extract_experience_years(text):
+def extract_experience_years(text):  # sourcery skip: use-contextlib-suppress, use-getitem-for-re-match-groups, use-named-expression
     current_year = datetime.datetime.now().year
     
     # 1. Explicit "X years"
@@ -275,7 +276,7 @@ def extract_experience_years(text):
                 return years
     return 0.0
 
-def extract_experience(text):
+def extract_experience(text):  # sourcery skip: low-code-quality, use-getitem-for-re-match-groups, use-named-expression
     current_year = datetime.datetime.now().year
     
     # Explicit "X years"
@@ -283,8 +284,8 @@ def extract_experience(text):
     matches = re.findall(exp_pattern, text.lower())
     if matches: 
         val = matches[0].replace('+', '')
-        if val.isdigit() and int(val) >= 5: return "Senior"
-        elif val.isdigit() and int(val) >= 2: return "Mid-Level"
+        if val.isdigit() and int(val) >= 5: return "Senior"  # noqa: E701
+        elif val.isdigit() and int(val) >= 2: return "Mid-Level"  # noqa: E701
         return f"{matches[0]} Years"
         
     # Calculate from date ranges
@@ -310,9 +311,9 @@ def extract_experience(text):
                     total_years += diff
                     
         if total_years > 0:
-            if total_years >= 5: return "Senior"
-            elif total_years >= 2: return "Mid-Level"
-            else: return "Entry Level"
+            if total_years >= 5: return "Senior"  # noqa: E701
+            elif total_years >= 2: return "Mid-Level"  # noqa: E701
+            else: return "Entry Level"  # noqa: E701
             
     # Fallback to keywords with strict word boundaries
     keywords = {
@@ -330,7 +331,7 @@ def extract_experience(text):
                 return level
     return "Fresher" # Default to Fresher if nothing else found
 
-def extract_education(text):
+def extract_education(text):  # sourcery skip: remove-dict-keys
     hierarchy = {
         "PhD": 5, "Ph.D": 5, "Doctorate": 5,
         "MBA": 4, "M.Tech": 4, "M.E": 4, "MSc": 4, "M.Sc": 4, "MCA": 4, "Master": 4, "M.Com": 4, "M.A": 4,
@@ -351,13 +352,14 @@ def extract_education(text):
     found.sort(key=lambda d: hierarchy[d], reverse=True)
     highest_degree = found[0]
     
-    if hierarchy[highest_degree] == 5: return "PhD"
-    elif hierarchy[highest_degree] == 4: return f"Master's ({highest_degree})" if highest_degree != "Master" else "Master's Degree"
-    elif hierarchy[highest_degree] == 3: return f"Bachelor's ({highest_degree})" if highest_degree != "Bachelor" else "Bachelor's Degree"
-    elif hierarchy[highest_degree] == 2: return "Diploma"
+    if hierarchy[highest_degree] == 5: return "PhD"  # noqa: E701
+    elif hierarchy[highest_degree] == 4: return f"Master's ({highest_degree})" if highest_degree != "Master" else "Master's Degree"  # noqa: E701
+    elif hierarchy[highest_degree] == 3: return f"Bachelor's ({highest_degree})" if highest_degree != "Bachelor" else "Bachelor's Degree"  # noqa: E701
+    elif hierarchy[highest_degree] == 2: return "Diploma"  # noqa: E701
     return highest_degree
 
 def calculate_smart_match(resume_words, job_desc_words, resume_text, jd_text):
+    # sourcery skip: assign-if-exp, extract-duplicate-method, introduce-default-else, move-assign-in-block
     """Calculates a realistic match score focusing on key technical skills."""
     
     # 1. Identify ALL Candidate Skills (using raw text for multi-word skills)
@@ -378,7 +380,7 @@ def calculate_smart_match(resume_words, job_desc_words, resume_text, jd_text):
     matched = sorted(list(all_candidate_skills.intersection(jd_skills)))
     missing = sorted(list(jd_skills.difference(all_candidate_skills)))
     
-    if not jd_skills: return 0, [], [], sorted(list(all_candidate_skills))
+    if not jd_skills: return 0, [], [], sorted(list(all_candidate_skills))  # noqa: E701
     
     # 3. Skill Match Percentage (Direct accuracy)
     skill_match_percent = (len(matched) / len(jd_skills)) * 100 if jd_skills else 100
@@ -392,11 +394,10 @@ def calculate_smart_match(resume_words, job_desc_words, resume_text, jd_text):
         
     # 5. Education Bonus
     edu_bonus = 0
-    jd_edu = extract_education(jd_text)
+    jd_edu = extract_education(jd_text) # type: ignore
     res_edu = extract_education(resume_text)
-    if jd_edu != "Degree Not Specified" and res_edu != "Degree Not Specified":
-        if any(d in res_edu for d in ["PhD", "Master", "Bachelor"]):
-            edu_bonus = 10
+    if jd_edu != "Degree Not Specified" and res_edu != "Degree Not Specified" and any(d in res_edu for d in ["PhD", "Master", "Bachelor"]):
+        edu_bonus = 10
 
     # Total weighted score for ranking
     total_score = round((skill_match_percent * 0.8) + exp_bonus + edu_bonus, 1)
@@ -411,6 +412,7 @@ def calculate_smart_match(resume_words, job_desc_words, resume_text, jd_text):
     }
 
 def generate_interview_questions(matched, missing, exp_input):
+    # sourcery skip: merge-list-appends-into-extend
     questions = []
     
     # Robustly handle both float years and string levels
@@ -418,12 +420,12 @@ def generate_interview_questions(matched, missing, exp_input):
     is_fresher = False
     
     if isinstance(exp_input, (int, float)):
-        if exp_input >= 7: is_senior = True
-        elif exp_input < 2: is_fresher = True
+        if exp_input >= 7: is_senior = True  # noqa: E701
+        elif exp_input < 2: is_fresher = True  # noqa: E701
     elif isinstance(exp_input, str):
         level = exp_input.lower()
-        if "senior" in level or "lead" in level or "manager" in level: is_senior = True
-        elif "fresher" in level or "entry" in level or "intern" in level or "0" in level: is_fresher = True
+        if "senior" in level or "lead" in level or "manager" in level: is_senior = True  # noqa: E701
+        elif "fresher" in level or "entry" in level or "intern" in level or "0" in level: is_fresher = True  # noqa: E701
 
     if is_senior:
         questions.append("Can you describe a time you led a team through a difficult technical transition?")
@@ -445,7 +447,7 @@ def generate_interview_questions(matched, missing, exp_input):
     
     return questions
 
-def extract_resume_sections(text):
+def extract_resume_sections(text):  # sourcery skip: assign-if-exp, low-code-quality, use-dict-itemsow-code-quality, use-dict-items
     sections = {
         "experience": [],
         "education": [],
@@ -492,11 +494,10 @@ def extract_resume_sections(text):
             continue
         
         classified = False
-        
-        if email_re.search(stripped) or phone_re.search(stripped):
-            if len(stripped) < 80:
-                sections["contact"].append(stripped)
-                classified = True
+        # noqa: E701
+        if (email_re.search(stripped) or phone_re.search(stripped)) and len(stripped) < 80:
+            sections["contact"].append(stripped)
+            classified = True
         
         if not classified and degree_re.search(stripped):
             sections["education"].append(stripped)

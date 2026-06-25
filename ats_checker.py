@@ -12,7 +12,7 @@ from resume_processor import (
     generate_interview_questions
 )
 def check_ats_score(file_path, job_description):
-    # sourcery skip: set-comprehension
+    # sourcery skip: assign-if-exp, low-code-quality, set-comprehension
     # sourcery skip: set-comprehension
     """
     Advanced ATS Score logic based on 10 modules.

@@ -4,8 +4,8 @@ Blueprint: coding_bp
 Routes: /coding-test (GET), /coding-test/run (POST)
 Supports: Python, JavaScript, Java, C, C++, Shell
 """
-from flask import Blueprint, render_template, request, jsonify
-from flask_login import login_required
+from flask import Blueprint, render_template, request, jsonify # type: ignore
+from flask_login import login_required # type: ignore
 import subprocess
 import sys
 import os
@@ -189,5 +189,5 @@ def run_code():
     finally:
         for path in [temp_path, out_path]:
             if path and os.path.exists(path):
-                try: os.remove(path)
-                except: pass
+                try: os.remove(path)  # noqa: E701
+                except: pass  # noqa: E701, E722

@@ -8,8 +8,8 @@ questions from session, presents them one-by-one, analyzes the
 user's answers via keyword matching, and grades the response.
 No external API key required.
 """
-from flask import Blueprint, render_template, request, jsonify, session
-from flask_login import login_required, current_user
+from flask import Blueprint, render_template, request, jsonify, session # type: ignore
+from flask_login import login_required, current_user # type: ignore
 import json
 
 interview_bp = Blueprint('interview', __name__)
@@ -68,9 +68,9 @@ def evaluate_answer(question, answer):
     score = 0
 
     # Length score (max 40 pts)
-    if word_count >= 40: score += 40
-    elif word_count >= 20: score += 25
-    else: score += 10
+    if word_count >= 40: score += 40  # noqa: E701
+    elif word_count >= 20: score += 25  # noqa: E701
+    else: score += 10  # noqa: E701
 
     # Keyword vocabulary (max 40 pts)
     strong_keywords = [
@@ -80,12 +80,13 @@ def evaluate_answer(question, answer):
         'python', 'java', 'sql', 'api', 'team', 'project', 'system', 'data',
         'challenge', 'solution', 'approach', 'strategy', 'framework', 'deploy'
     ]
-    keyword_hits = sum(1 for kw in strong_keywords if kw in ans)
+    keyword_hits = sum(kw in ans for kw in strong_keywords)
     score += min(40, keyword_hits * 10)
 
     # Confidence indicators (max 20 pts)
     confidence_words = ['i', "i've", "i'm", 'my', 'we', 'our', 'specifically', 'example', 'situation']
-    confidence_hits = sum(1 for cw in confidence_words if cw in ans.split())
+    ans_tokens = ans.split()
+    confidence_hits = sum(cw in ans_tokens for cw in confidence_words)
     score += min(20, confidence_hits * 5)
 
     score = min(100, score)
@@ -106,7 +107,7 @@ def evaluate_answer(question, answer):
 
 @interview_bp.route('/mock-interview')
 @login_required
-def mock_interview():
+def mock_interview():  # sourcery skip: use-contextlib-suppress
     """Load the interview page. Pull questions from ATS session if available."""
     # Try to get ATS-generated interview questions from session
     ats_data_json = session.get('ats_result')

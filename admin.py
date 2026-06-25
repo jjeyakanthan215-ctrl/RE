@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, redirect, url_for, flash
-from flask_login import login_required, current_user
+from flask import Blueprint, render_template, redirect, url_for, flash # type: ignore
+from flask_login import login_required, current_user # type: ignore
 import json
 
 admin_bp = Blueprint('admin', __name__)
@@ -18,8 +18,8 @@ def admin_only(f):
 @admin_bp.route('/admin')
 @login_required
 @admin_only
-def dashboard():
-    from database import db, User, ScreeningSession, ATSCheck
+def dashboard():  # sourcery skip: comprehension-to-generator
+    from database import db, User, ScreeningSession, ATSCheck  # noqa: F401
     # Jerry can see EVERYONE'S sessions
     all_sessions = db.session.query(ScreeningSession).order_by(ScreeningSession.created_at.desc()).all()
     
@@ -51,7 +51,7 @@ def view_session(session_id):
 @admin_bp.route('/admin/delete/<session_id>')
 @login_required
 @admin_only
-def delete_session(session_id):
+def delete_session(session_id):  # sourcery skip: use-named-expression
     from database import db, ScreeningSession
     session_data = db.session.get(ScreeningSession, session_id)
     if session_data:

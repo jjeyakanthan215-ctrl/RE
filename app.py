@@ -6,7 +6,7 @@ import csv
 import uuid
 import json
 from flask import Flask, request, render_template, redirect, url_for, flash, make_response, session, jsonify # type: ignore
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user # type: ignore
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user # type: ignore 
 from werkzeug.security import generate_password_hash, check_password_hash  # type: ignore
 import logging
 from resume_processor import process_resume
