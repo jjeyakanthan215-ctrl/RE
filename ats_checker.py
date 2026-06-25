@@ -5,14 +5,15 @@ from resume_processor import (
     preprocess_text, 
     TECH_SKILLS, 
     extract_contact_info, 
-    extract_experience, 
+    extract_experience,  # noqa: F401
     extract_experience_years,
     extract_education, 
     extract_resume_sections,
     generate_interview_questions
 )
- 
 def check_ats_score(file_path, job_description):
+    # sourcery skip: set-comprehension
+    # sourcery skip: set-comprehension
     """
     Advanced ATS Score logic based on 10 modules.
     Returns a comprehensive dict of scores and feedback.
@@ -25,8 +26,8 @@ def check_ats_score(file_path, job_description):
         
     lower_text = text.lower()
     lower_jd = job_description.lower()
-    resume_words = preprocess_text(text)
-    jd_words = preprocess_text(job_description)
+    resume_words = preprocess_text(text)  # noqa: F841
+    jd_words = preprocess_text(job_description)  # noqa: F841
     
     # 1. Keyword Match Score (25%)
     all_candidate_skills = set()
@@ -109,8 +110,8 @@ def check_ats_score(file_path, job_description):
     ]
     weak_verbs = ["responsible for", "helped with", "assisted in", "worked on", "duties included"]
     
-    strong_count = sum(1 for verb in strong_verbs if verb in lower_text)
-    weak_count = sum(1 for verb in weak_verbs if verb in lower_text)
+    strong_count = sum(verb in lower_text for verb in strong_verbs)
+    weak_count = sum(verb in lower_text for verb in weak_verbs)
     
     action_verb_score = min(5, (strong_count * 1.5))
     if weak_count > 0:
