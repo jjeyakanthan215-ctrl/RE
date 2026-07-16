@@ -1,4 +1,4 @@
-// Animated mesh canvas
+// Animated mesh canvas 
 const canvas = document.createElement('canvas');
 canvas.id = 'meshCanvas';
 document.body.prepend(canvas);
