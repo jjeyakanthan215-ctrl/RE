@@ -22,7 +22,9 @@ wheels/
 *.egg
 
 # Databases
-esctrix.db
+esctrix.db*
+*.db-shm
+*.db-wal
 
 # User Uploads
 uploaded_resumes/
@@ -33,6 +35,10 @@ Resumes/uploaded_resumes/
 venv/
 ENV/
 
+# IDE
+.idea/
+.vscode/
+
 # Logs
 *.log
 resume_processor.log
@@ -41,3 +47,4 @@ resume_processor.log
 .DS_Store
 Thumbs.db
 *.exe
+

@@ -11,19 +11,22 @@ import nltk # type: ignore
 from nltk.tokenize import word_tokenize # type: ignore
 from nltk.corpus import stopwords# type: ignore
 from PIL import Image # type: ignore
-import pytesseract # type: ignore
 import pypdfium2 as pdfium # type: ignore
 import shutil
 
-# Check if tesseract is available in the system PATH or common Windows path
-TESSERACT_AVAILABLE = False
-if shutil.which("tesseract"):
-    TESSERACT_AVAILABLE = True
-else:
-    common_tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    if os.path.exists(common_tesseract_path):
-        pytesseract.pytesseract.tesseract_cmd = common_tesseract_path
-        TESSERACT_AVAILABLE = True
+# Initialize EasyOCR reader lazily to save startup time
+_ocr_reader = None
+
+def get_ocr_reader():
+    global _ocr_reader
+    if _ocr_reader is None:
+        logger.info("Initializing EasyOCR reader (this may take a moment on first run)...")
+        import easyocr # type: ignore
+        # Suppress easyocr's verbose logging
+        import logging as ext_logging
+        ext_logging.getLogger('easyocr').setLevel(ext_logging.ERROR)
+        _ocr_reader = easyocr.Reader(['en'], gpu=False, verbose=False)
+    return _ocr_reader
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -69,29 +72,31 @@ def download_nltk_data():
         nltk.data.find('tokenizers/punkt')
         nltk.data.find('corpora/stopwords')
     except LookupError:
-        nltk.download('punkt')
-        nltk.download('stopwords')
+        nltk.download('punkt', quiet=True)
+        nltk.download('stopwords', quiet=True)
 
 download_nltk_data()
 
 def ocr_pdf_fallback(file_path):  # sourcery skip: use-named-expression
-    """Converts PDF pages to images using pypdfium2 and runs OCR. Robust for image-based PDFs."""
+    """Converts PDF pages to images using pypdfium2 and runs EasyOCR. Robust for image-based PDFs."""
     try:
-        if not TESSERACT_AVAILABLE:
-            logger.warning("Tesseract binary not found. OCR fallback skipped.")
-            return "ERR_TESSERACT_NOT_FOUND"
-
-        logger.info(f"Running OCR fallback on PDF (pypdfium2): {file_path}")
+        logger.info(f"Running OCR fallback on PDF (pypdfium2 + EasyOCR): {file_path}")
         pdf = pdfium.PdfDocument(file_path)
         full_text = ""
+        reader = get_ocr_reader()
         for i in range(len(pdf)):
             page = pdf[i]
             # Render page to bitmap at 300 DPI
             bitmap = page.render(scale=300/72)
             pil_image = bitmap.to_pil()
-            page_text = pytesseract.image_to_string(pil_image)
-            if page_text:
-                full_text += page_text + "\n"
+            
+            # EasyOCR expects numpy array or file path, we can pass numpy array
+            import numpy as np
+            img_np = np.array(pil_image)
+            
+            result = reader.readtext(img_np, detail=0)
+            if result:
+                full_text += " ".join(result) + "\n"
         pdf.close()
         return full_text.strip()
     except Exception as e:
@@ -144,8 +149,6 @@ def extract_text(file_path):  # sourcery skip: low-code-quality, use-fstring-for
             if len(clean_text) < 30:
                 logger.info("PDF has very little extractable text. Attempting OCR fallback...")
                 ocr_text = ocr_pdf_fallback(file_path)
-                if ocr_text == "ERR_TESSERACT_NOT_FOUND":
-                    return "OCR_FAILED_TESSERACT_NOT_FOUND"
                 if ocr_text:
                     text = ocr_text
                     
@@ -192,14 +195,13 @@ def extract_text(file_path):  # sourcery skip: low-code-quality, use-fstring-for
                 logger.error(f".doc extraction failed: {e}")
                 text = ""
         elif ext in [".png", ".jpg", ".jpeg"]:
-            if not TESSERACT_AVAILABLE:
-                return "OCR_FAILED_TESSERACT_NOT_FOUND"
             try:
-                img = Image.open(file_path)
-                text = pytesseract.image_to_string(img)
+                reader = get_ocr_reader()
+                result = reader.readtext(file_path, detail=0)
+                text = " ".join(result) if result else ""
             except Exception as ocr_e:
                 logger.error(f"OCR Error: {str(ocr_e)}")
-                return "OCR_FAILED_TESSERACT_NOT_FOUND"
+                return ""
         text = text.replace('\x00', '') 
     except Exception as e:
         logger.error(f"Error: {str(e)}")
@@ -565,14 +567,7 @@ def process_resume(file_path, job_description):
     text = extract_text(file_path)
     filename = os.path.basename(file_path)
     
-    if text == "OCR_FAILED_TESSERACT_NOT_FOUND":
-        return {
-            "filename": filename,
-            "name": extract_candidate_name("", filename),
-            "sections": {"experience": "Not Specified", "education": "Not Specified", "certifications": "Not Specified", "languages": "Not Specified", "skills": "Not Specified", "contact": "Not Specified"},
-            "score": 0, "skills": "None", "all_skills": "None", "missing": "N/A", "experience": "Unknown", "contact": "Not Found", "education": "Not Specified", "summary": "OCR Failed. Tesseract not installed.", "questions": []
-        }
-        
+
     if text == "UNSUPPORTED_FORMAT_DOC":
         return {"filename": filename, "score": 0, "skills": "None", "all_skills": "None", "missing": "N/A", "experience": "Unknown", "contact": "N/A", "education": "N/A", "summary": "Unsupported (.doc) format. Please convert to .docx or .pdf.", "questions": [], "sections": {}}
     

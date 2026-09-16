@@ -1,5 +1,5 @@
 """
-ESCTRIX - AI Mock Interview Module
+AI Screening - AI Mock Interview Module
 Blueprint: interview_bp
 Routes: /mock-interview (GET), /mock-interview/respond (POST)
  

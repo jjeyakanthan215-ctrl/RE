@@ -1,6 +1,18 @@
 
 import os
 import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+# Also specifically ignore the CryptographyDeprecationWarning which inherits from UserWarning in older versions and Warning in newer versions
+try:
+    from cryptography.utils import CryptographyDeprecationWarning # type: ignore
+    warnings.filterwarnings("ignore", category=CryptographyDeprecationWarning)
+except ImportError:
+    pass
+
+# We also filter general warnings just in case
+warnings.filterwarnings("ignore")
+
 import io
 import csv
 import uuid
@@ -16,17 +28,16 @@ from interview_bp import interview_bp
 from database import db, User, ScreeningSession, Candidate, ATSCheck
 
 # NLTK data is typically pre-downloaded in build phase, but we keep this as a safe fallback
-warnings.filterwarnings("ignore", category=UserWarning)
 
 
 def init_nltk():
     try:
         import nltk # type: ignore
-        for res in ['punkt', 'stopwords', 'averaged_perceptron_tagger']:
+        for res in ['punkt', 'punkt_tab', 'stopwords', 'averaged_perceptron_tagger', 'averaged_perceptron_tagger_eng']:
             try:
-                nltk.data.find(f'tokenizers/{res}' if res == 'punkt' else f'corpora/{res}')
+                nltk.data.find(f'tokenizers/{res}' if 'punkt' in res else f'corpora/{res}')
             except (LookupError, AttributeError):
-                nltk.download(res)
+                nltk.download(res, quiet=True)
     except Exception:
         pass
 
@@ -36,11 +47,44 @@ init_nltk()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Rebrand the terminal logs from 'werkzeug' to 'ESCTRIX'
-logging.getLogger('werkzeug').name = 'ESCTRIX'
-log = logging.getLogger('ESCTRIX')
+# Rebrand the terminal logs from 'werkzeug' to 'AI Screening'
+werkzeug_logger = logging.getLogger('werkzeug')
+werkzeug_logger.name = 'AI Screening'
+
+class QuitMessageFilter(logging.Filter):
+    def filter(self, record):
+        if "Press CTRL+C to quit" in record.getMessage():
+            record.msg = record.msg.replace("CTRL+C", "CTRL+Q")
+        return True
+
+werkzeug_logger.addFilter(QuitMessageFilter())
+
+# Implement CTRL+Q to quit on Windows
+import sys
+import threading
+def _wait_for_ctrl_q():
+    import os
+    import time
+    try:
+        import msvcrt
+        while True:
+            if msvcrt.kbhit():
+                key = msvcrt.getch()
+                if key == b'\x11':  # CTRL+Q
+                    print("\nQuit signal received (CTRL+Q). Shutting down...")
+                    os._exit(0)
+            time.sleep(0.1)
+    except ImportError:
+        pass
+
+if sys.platform == 'win32':
+    threading.Thread(target=_wait_for_ctrl_q, daemon=True).start()
+
+log = logging.getLogger('AI Screening')
 
 app = Flask(__name__)
+os.makedirs("uploaded_resumes", exist_ok=True)
+
 
 # Configuration
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -99,6 +143,7 @@ def signup():
         if user:
             flash('Email already exists.')
             return redirect(url_for('signup'))
+        # pyrefly: ignore [unexpected-keyword]
         new_user = User(email=email, name=name, password=generate_password_hash(password), role=role)
         db.session.add(new_user)
         db.session.commit()
@@ -160,10 +205,12 @@ def screen():
         results.sort(key=lambda x: x['score'], reverse=True)
         
         session_id = str(uuid.uuid4())
+        # pyrefly: ignore [unexpected-keyword]
         new_session = ScreeningSession(id=session_id, user_id=current_user.id, job_description=job_description)
         db.session.add(new_session)
 
         for processed_data in results:
+            # pyrefly: ignore [unexpected-keyword]
             cand_entry = Candidate(session_id=session_id, data=json.dumps(processed_data))
             db.session.add(cand_entry)
             
@@ -255,13 +302,12 @@ def ats_check():
             
             # Save to ATS History
             if current_user.is_authenticated:
-                ats_check_entry = ATSCheck(
-                    user_id=current_user.id,
-                    job_description=job_description,
-                    resume_filename=resume_file.filename,
-                    score=result.get('total_score', 0),
-                    result_data=json.dumps(result)
-                )
+                ats_check_entry = ATSCheck()
+                ats_check_entry.user_id = current_user.id
+                ats_check_entry.job_description = job_description
+                ats_check_entry.resume_filename = resume_file.filename
+                ats_check_entry.score = result.get('total_score', 0)
+                ats_check_entry.result_data = json.dumps(result)
                 db.session.add(ats_check_entry)
                 db.session.commit()
                 
@@ -315,7 +361,7 @@ def send_invite():
     print("\n" + "="*50)
     print("🚀 AUTOMATED SYSTEM EMAIL DISPATCHED 🚀")
     print(f"To: {email}")
-    print("Subject: Interview Invitation - ESCTRIX Platform")
+    print("Subject: Interview Invitation - AI Screening Platform")
     print(f"Body: Dear {candidate_name},\n\nWe were impressed by your profile. Please use the link below to schedule an interview with our technical team.\n\nBest,\nThe Hiring Team")
     print("="*50 + "\n")
     
@@ -333,7 +379,7 @@ if __name__ == "__main__":
         db.create_all()
     
     print("\n" + "[+] " + "="*50)
-    print("   ESCTRIX PLATFORM - SMART RECRUITMENT ENGINE   ")
+    print("   AI Screening PLATFORM - SMART RECRUITMENT ENGINE   ")
     print("   Live Coding + AI Interview Modules Active     ")
     print("="*54 + "\n")
     
