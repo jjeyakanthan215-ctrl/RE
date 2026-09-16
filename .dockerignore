@@ -9,10 +9,10 @@ __pycache__
 *.pyd
 .idea
 .vscode
-esctrix.db
-esctrix.db-shm
-esctrix.db-wal
+esctrix.db*
+*.db-shm
+*.db-wal
 uploaded_resumes/*
 *.log
 *.pptx
-*.txt
+info.txt

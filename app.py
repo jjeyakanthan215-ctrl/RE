@@ -109,13 +109,43 @@ login_manager.init_app(app)
 # Database setup
 # (db already initialized above)
 
+# Keep-Alive 24/7 Mechanism for Render Free Tier (prevents 15-min idle sleep & 60s cold start)
+def _start_keep_alive():
+    import time
+    import requests # type: ignore
+    time.sleep(30)
+    while True:
+        try:
+            # Render automatically sets RENDER_EXTERNAL_URL (e.g. https://your-service.onrender.com)
+            url = os.environ.get("RENDER_EXTERNAL_URL") or os.environ.get("APP_URL")
+            if url:
+                health_url = f"{url.rstrip('/')}/health"
+                resp = requests.get(health_url, timeout=15)
+                logger.info(f"[Keep-Alive 24/7] Heartbeat pinged {health_url} (HTTP {resp.status_code})")
+        except Exception as e:
+            logger.debug(f"[Keep-Alive] Heartbeat ping attempt: {e}")
+        # Ping every 10 minutes (600 seconds), before Render's 15-minute sleep threshold
+        time.sleep(600)
+
+threading.Thread(target=_start_keep_alive, daemon=True).start()
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
 
+@app.route("/health")
+@app.route("/ping")
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "service": "AI Screening Platform",
+        "keep_alive": "active_24_7"
+    }), 200
+
 @app.route("/")
 def index():
     return render_template("index.html", current_user=current_user)
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
