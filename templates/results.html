@@ -1,242 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recruitment Hub — AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary: #a855f7;
-            --secondary: #06b6d4;
-            --bg-card: rgba(15, 15, 25, 0.75);
-            --border-glow: rgba(168, 85, 247, 0.2);
+            --primary: #BAFF00;
+            --secondary: #2D633D;
+            --bg-card: #222528;
+            --border-glow: rgba(186, 255, 0, 0.25);
         }
 
         body {
-            font-family: 'Outfit', sans-serif;
-            scroll-behavior: smooth;
-        }
-
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 40px;
-            height: 80px;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-            background: rgba(10, 10, 15, 0.7);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            box-sizing: border-box;
-        }
-
-        .nav-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-        }
-
-        .actions {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            font-family: var(--font-body);
         }
 
         .results-container {
-            max-width: 1200px;
-            margin: 120px auto 100px;
+            max-width: 1240px;
+            margin: 110px auto 100px;
             padding: 0 40px;
         }
 
         .header-main {
             text-align: center;
-            margin-bottom: 60px;
+            margin-bottom: 50px;
         }
 
         .header-main h1 {
-            font-size: 3.5rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-
+            font-size: 3rem;
+            font-weight: 800;
+            color: #FFFFFF;
+            letter-spacing: -0.02em;
         }
 
         .jd-pill {
             display: inline-block;
-            margin-top: 15px;
-            padding: 10px 25px;
-            background: rgba(168, 85, 247, 0.1);
+            margin-top: 12px;
+            padding: 8px 20px;
+            background: rgba(186, 255, 0, 0.1);
             border: 1px solid var(--border-glow);
-            border-radius: 30px;
+            border-radius: var(--radius-sm);
             color: var(--primary);
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 600;
         }
 
         .analytics-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 80px;
+            gap: 24px;
+            margin-bottom: 60px;
         }
 
         .chart-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            padding: 30px;
-            border-radius: 32px;
-            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-light);
+            padding: 28px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
         }
 
         .chart-card h3 {
             font-size: 0.8rem;
-            color: #888;
+            color: #9BA2AA;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 25px;
+            letter-spacing: 0.08em;
+            margin-bottom: 20px;
         }
 
         .chart-container {
-            height: 250px;
+            height: 240px;
             position: relative;
         }
 
         .feed-title {
-            font-size: 2rem;
-            font-weight: 900;
+            font-size: 1.8rem;
+            font-weight: 800;
             color: #fff;
-            margin-bottom: 40px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
         }
 
         .feed-title::after {
             content: '';
             flex: 1;
             height: 1px;
-            background: linear-gradient(90deg, rgba(168, 85, 247, 0.3), transparent);
+            background: var(--border-light);
         }
 
         .candidate-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-glow);
-            border-radius: 40px;
-            padding: 50px;
-            margin-bottom: 50px;
-            backdrop-filter: blur(25px);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 44px;
+            margin-bottom: 40px;
             position: relative;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            box-shadow: var(--shadow-card);
+            transition: transform 0.25s ease, border-color 0.25s ease;
         }
 
         .candidate-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(168, 85, 247, 0.5);
+            transform: translateY(-3px);
+            border-color: var(--border-glow);
         }
 
         .rank-badge {
             position: absolute;
-            top: -20px;
-            left: 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            padding: 10px 24px;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            font-weight: 900;
-            box-shadow: 0 10px 25px rgba(168, 85, 247, 0.4);
+            top: -16px;
+            left: 36px;
+            background: #2D3035;
+            color: var(--primary);
+            border: 1px solid var(--border-glow);
+            padding: 6px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 800;
+            font-family: var(--font-heading);
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
             z-index: 5;
         }
 
         .candidate-card:first-child .rank-badge {
-            background: linear-gradient(135deg, #f59e0b, #ef4444) !important;
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.5) !important;
+            background: var(--primary) !important;
+            color: #0A0C0E !important;
+            border-color: var(--primary) !important;
         }
 
         .profile-header {
             display: flex;
             align-items: center;
-            gap: 30px;
-            margin-bottom: 45px;
+            gap: 24px;
+            margin-bottom: 36px;
         }
 
         .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 28px;
-            background: rgba(255, 255, 255, 0.05);
+            width: 76px;
+            height: 76px;
+            border-radius: var(--radius-md);
+            background: #2B2E33;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 900;
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--primary);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-light);
+            font-family: var(--font-heading);
         }
 
         .score-display {
             margin-left: auto;
-            text-align: right;
+            display: flex;
+            gap: 24px;
         }
 
         .score-val {
-            font-size: 3.5rem;
+            font-size: 2.2rem;
             font-weight: 900;
             color: #fff;
             line-height: 1;
+            font-family: var(--font-heading);
         }
 
         .score-label {
-            font-size: 0.85rem;
-            color: var(--primary);
-            font-weight: 800;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            font-weight: 700;
             text-transform: uppercase;
-            margin-top: 5px;
-            letter-spacing: 1px;
+            margin-top: 4px;
+            letter-spacing: 0.06em;
         }
 
         .detail-grid {
             display: grid;
             grid-template-columns: 1.8fr 1.2fr;
-            gap: 40px;
+            gap: 32px;
         }
 
         .info-panel {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 30px;
-            border-radius: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: var(--bg-card);
+            padding: 24px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-light);
         }
 
         .panel-title {
             font-size: 0.75rem;
             color: var(--primary);
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
+            letter-spacing: 0.08em;
+            margin-bottom: 16px;
             font-weight: 800;
         }
 
         .summary-box {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             line-height: 1.6;
-            color: #eee;
-            border-left: 5px solid var(--primary);
-            padding-left: 25px;
+            color: #D2D6DC;
+            border-left: 3px solid var(--primary);
+            padding-left: 18px;
             font-style: italic;
-            font-weight: 500;
         }
 
         .tag-wrap {
@@ -246,37 +215,38 @@
         }
 
         .tag {
-            font-size: 0.85rem;
-            padding: 8px 18px;
-            border-radius: 12px;
-            background: rgba(168, 85, 247, 0.1);
-            color: #d8b4fe;
-            border: 1px solid rgba(168, 85, 247, 0.2);
+            font-size: 0.82rem;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            background: rgba(186, 255, 0, 0.1);
+            color: var(--primary);
+            border: 1px solid var(--border-glow);
             font-weight: 600;
         }
 
         .tag.missing {
-            background: rgba(239, 68, 68, 0.05);
-            color: #f87171;
+            background: rgba(255, 90, 95, 0.08);
+            color: var(--status-danger);
             text-decoration: line-through;
-            border-color: rgba(239, 68, 68, 0.2);
+            border-color: rgba(255, 90, 95, 0.25);
         }
 
         .question-box {
-            background: rgba(168, 85, 247, 0.05);
-            padding: 18px 25px;
-            border-radius: 15px;
-            margin-bottom: 12px;
-            color: #eee;
-            font-size: 0.95rem;
+            background: #2B2E33;
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            color: #E4E7EB;
+            font-size: 0.92rem;
             display: flex;
-            gap: 15px;
+            gap: 12px;
             align-items: flex-start;
+            border: 1px solid var(--border-light);
         }
 
         .question-box b {
             color: var(--primary);
-            font-weight: 900;
+            font-weight: 800;
         }
 
         .btn-invite {
@@ -284,123 +254,64 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            padding: 18px;
-            border-radius: 18px;
-            background: #fff;
-            color: #000;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            background: var(--primary);
+            color: #0A0C0E;
             font-weight: 800;
-            text-decoration: none;
-            transition: 0.3s;
-            font-size: 1rem;
+            font-family: var(--font-heading);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-size: 0.88rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-invite:hover {
-            transform: scale(1.02);
-            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.2);
+            background: var(--lime-hover);
+            transform: translateY(-2px);
         }
 
-        .btn-export {
-            background: rgba(6, 182, 212, 0.1);
-            color: var(--secondary);
-            border: 1px solid var(--secondary);
-            padding: 12px 24px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 700;
-        }
-
-        .btn-new {
-            background: #fff;
-            color: #000;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 800;
+        @media (max-width: 900px) {
+            .analytics-grid { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .profile-header { flex-wrap: wrap; }
+            .results-container { padding: 0 20px; }
         }
 
         @media print {
-            body * {
-                visibility: hidden;
-            }
-
-            .print-focus,
-            .print-focus * {
-                visibility: visible;
-            }
-
+            body * { visibility: hidden; }
+            .print-focus, .print-focus * { visibility: visible; }
             .print-focus {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                background: #fff !important;
-                color: #000 !important;
-                box-shadow: none;
+                position: absolute; left: 0; top: 0; width: 100%;
+                background: #fff !important; color: #000 !important;
                 border: 1px solid #ccc;
             }
-
-            .print-focus .panel-title {
-                color: #000 !important;
-            }
-
-            .print-focus .tag {
-                border: 1px solid #ccc !important;
-                color: #000 !important;
-            }
-
-            .print-focus .btn-invite,
-            .print-focus .pdf-btn {
-                display: none !important;
-            }
-
-            .navbar,
-            .header-main,
-            .analytics-grid,
-            .feed-title,
-            .control-bar {
-                display: none !important;
-            }
+            .print-focus .panel-title, .print-focus .tag { color: #000 !important; }
+            .print-focus .btn-invite, .print-focus .pdf-btn { display: none !important; }
+            .navbar, .header-main, .analytics-grid, .feed-title, .control-bar { display: none !important; }
         }
     </style>
 </head>
 
 <body>
-    <div class="grid-bg"></div>
-    <div class="orb-wrapper">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
+    <div class="editorial-bg"></div>
+
     <nav class="navbar">
         <a href="/" class="nav-brand">
-            <svg viewBox="0 0 24 24" fill="none" width="30" height="30">
-                <polygon points="12,2 22,20 2,20" fill="url(#sGrad)" />
-                <defs>
-                    <linearGradient id="sGrad">
-                        <stop offset="0%" style="stop-color:#a855f7" />
-                        <stop offset="100%" style="stop-color:#06b6d4" />
-                    </linearGradient>
-                </defs>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="4" fill="#BAFF00"/>
+                <circle cx="12" cy="12" r="4" fill="#0A0C0E"/>
             </svg>
-            <span class="brand-name" style="font-weight: 900;">AI Screening</span>
+            <span class="brand-name">AI SCREENING</span>
         </a>
-        <div class="actions">
-            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); margin-right: 15px;">
-                <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
-                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    Back to Home
-                </a>
-            </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
             {% if current_user.is_authenticated %}
-            <span style="color: #a855f7; font-weight: 700; margin-right: 20px; font-size: 0.95rem;">Hello, {{
-                current_user.name }}</span>
-            <a href="/logout"
-                style="color: #888; text-decoration: none; font-size: 0.85rem; margin-right: 20px; font-weight: 600;">Logout</a>
+                <span class="badge-dark"><span class="badge-dot"></span> {{ current_user.name }}</span>
             {% endif %}
-            <a href="/export" class="btn-export">Export CSV</a>
-            <a href="/screen" class="btn-new">New Session</a>
+            <a href="/export" class="btn-secondary btn-sm">Export CSV</a>
+            <a href="/screen" class="btn-primary btn-sm">New Session</a>
         </div>
     </nav>
 
@@ -408,7 +319,7 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <div style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); color: #f9a8d4; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-size: 0.9rem;">
+                    <div class="alert">
                         {{ message }}
                     </div>
                 {% endfor %}
@@ -416,8 +327,9 @@
         {% endwith %}
 
         <div class="header-main">
-            <h1>Recruitment Leaderboard</h1>
-            <div class="jd-pill">Target: {{ job_description[:100] }}...</div>
+            <span class="badge-lime" style="margin-bottom: 12px;">EVALUATION COMPLETE</span>
+            <h1 style="margin-top: 8px;">Ranked Candidate Leaderboard</h1>
+            <div class="jd-pill">Target Specification: {{ job_description[:100] }}...</div>
         </div>
 
         <div class="analytics-grid">
@@ -426,19 +338,18 @@
                 <div class="chart-container"><canvas id="skillsChart"></canvas></div>
             </div>
             <div class="chart-card">
-                <h3>Talent Seniority</h3>
+                <h3>Talent Seniority Distribution</h3>
                 <div class="chart-container"><canvas id="expChart"></canvas></div>
             </div>
         </div>
 
-        <div class="control-bar"
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-            <div class="feed-title" style="margin: 0; flex: 1;">Ranked Candidate Profiles</div>
-            <div style="display: flex; gap: 15px; align-items: center;">
+        <div class="control-bar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; gap: 20px; flex-wrap: wrap;">
+            <div class="feed-title" style="margin: 0; flex: 1;">Candidate Profiles ({{ results|length }})</div>
+            <div style="display: flex; gap: 12px; align-items: center;">
                 <input type="text" id="searchInput" placeholder="Search skills, names..."
-                    style="padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; width: 250px; font-family: 'Outfit'; font-size: 0.95rem;">
+                    style="padding: 10px 16px; border-radius: 4px; border: 1px solid var(--border-medium); background: var(--bg-card); color: #fff; width: 240px; font-size: 0.9rem;">
                 <select id="seniorityFilter"
-                    style="padding: 12px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3); color: #fff; font-family: 'Outfit'; font-size: 0.95rem; cursor: pointer;">
+                    style="padding: 10px 16px; border-radius: 4px; border: 1px solid var(--border-medium); background: var(--bg-card); color: #fff; font-size: 0.9rem; cursor: pointer;">
                     <option value="all">All Seniority</option>
                     <option value="Senior">Senior</option>
                     <option value="Mid-Level">Mid-Level</option>
@@ -449,125 +360,117 @@
 
         <div id="candidatesContainer">
             {% if not results %}
-            <div style="text-align: center; padding: 100px 40px; background: rgba(255,255,255,0.02); border: 1px dashed rgba(168,85,247,0.2); border-radius: 40px; margin-top: 50px;">
-                <div style="font-size: 4rem; margin-bottom: 20px;">🔍</div>
-                <h2 style="color: #fff; font-weight: 800; font-size: 1.8rem; margin-bottom: 10px;">No Results Found</h2>
-                <p style="color: #777; font-size: 1rem; max-width: 400px; margin: 0 auto 30px;">We couldn't process any resumes or find matches for the current session. Please try uploading clearer documents.</p>
-                <a href="/screen" class="btn-new" style="display: inline-block;">Start New Session</a>
+            <div style="text-align: center; padding: 80px 40px; background: var(--bg-surface); border: 1px dashed var(--border-medium); border-radius: var(--radius-lg); margin-top: 40px;">
+                <div style="font-size: 3rem; margin-bottom: 16px;">🔍</div>
+                <h2 style="color: #fff; font-weight: 800; font-size: 1.6rem; margin-bottom: 8px;">No Candidates Processed</h2>
+                <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 440px; margin: 0 auto 24px;">Please return to the screening module and upload readable PDF or DOCX resumes.</p>
+                <a href="/screen" class="btn-primary">Start New Session</a>
             </div>
             {% endif %}
+
             {% for row in results %}
-            <div class="candidate-card" data-name="{{ row.name|lower }}" data-skills="{{ row.all_skills|lower }}"
-                data-exp="{{ row.experience }}">
+            <div class="candidate-card" data-name="{{ row.name|lower }}" data-skills="{{ row.all_skills|lower }}" data-exp="{{ row.experience }}">
                 <div class="rank-badge">
                     RANK #{{ loop.index }}
                 </div>
 
                 <div class="profile-header">
-                    <div class="avatar" style="background: linear-gradient(135deg, #a855f7, #06b6d4);">{{ row.name[0]|upper if row.name else '?' }}</div>
+                    <div class="avatar">{{ row.name[0]|upper if row.name else '?' }}</div>
                     <div>
-                        <h2 style="margin:0; font-size:2.2rem; font-weight:900; color:#fff;">{{ row.name }}</h2>
-                        <p style="margin:5px 0 0; color:#888; font-weight:600; font-size:1.1rem;">{{ row.education }} ·
-                            {{ row.experience }}</p>
-                        <p style="margin:5px 0 0; color:#555; font-size:0.8rem; text-transform:uppercase;">File: {{
-                            row.filename }}</p>
+                        <h2 style="margin:0; font-size:2rem; font-weight:800; color:#fff;">{{ row.name }}</h2>
+                        <p style="margin:4px 0 0; color:var(--text-muted); font-weight:600; font-size:1rem;">
+                            {{ row.education }} · {{ row.experience }}
+                        </p>
+                        <p style="margin:4px 0 0; color:var(--text-subtle); font-size:0.8rem; text-transform:uppercase;">
+                            Source: {{ row.filename }}
+                        </p>
                     </div>
-                    <div class="score-display" style="display: flex; gap: 30px;">
+                    <div class="score-display">
                         <div style="text-align: center;">
-                            <div class="score-val" style="font-size: 2.5rem; color: #06b6d4;">{{ row.skill_accuracy|int }}%</div>
-                            <div class="score-label" style="font-size: 0.65rem;">Skill Match</div>
+                            <div class="score-val" style="color: var(--primary);">{{ row.skill_accuracy|int }}%</div>
+                            <div class="score-label">Skill Match</div>
                         </div>
                         <div style="text-align: center;">
-                            <div class="score-val" style="font-size: 2.5rem; color: #a855f7;">{{ row.seniority_match|int }}%</div>
-                            <div class="score-label" style="font-size: 0.65rem;">Seniority</div>
+                            <div class="score-val" style="color: #FFFFFF;">{{ row.seniority_match|int }}%</div>
+                            <div class="score-label">Seniority</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="detail-grid">
                     <div class="main-content">
-                        <div class="info-panel" style="margin-bottom:25px;">
-                            <div class="panel-title">System Verdict</div>
+                        <div class="info-panel" style="margin-bottom:20px;">
+                            <div class="panel-title">System Assessment</div>
                             <div class="summary-box">"{{ row.summary }}"</div>
                         </div>
 
-                        {% if row.score < 100 %} <div class="info-panel" style="margin-bottom:25px;">
-                            <div class="panel-title" style="color: #f87171;">Score Analysis</div>
-                            <p style="color:#e2e8f0; font-size:0.9rem; line-height: 1.6; margin: 0;">
-                                The compatibility score is currently at <strong>{{ row.score }}%</strong>. This score is
-                                reduced because the system could not find the following key qualifications requested in
-                                your Job Description:
-                                <span style="color: #f87171; font-weight: 500;">{{ row.missing if row.missing != "None"
-                                    else "Certain required experience levels or soft skills" }}</span>.
+                        {% if row.score < 100 %}
+                        <div class="info-panel" style="margin-bottom:20px;">
+                            <div class="panel-title" style="color: var(--status-danger);">Compatibility Delta</div>
+                            <p style="color: #D2D6DC; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+                                Overall rating calculated at <strong>{{ row.score }}%</strong>. Unmatched qualifications:
+                                <span style="color: var(--status-danger); font-weight: 600;">
+                                    {{ row.missing if row.missing != "None" else "Required seniority benchmark or specialized certifications" }}
+                                </span>
                             </p>
-                    </div>
-                    {% endif %}
-                    <div class="info-panel">
-                        <div class="panel-title">Keyword Gap Analysis</div>
-                        <div style="margin-bottom:25px;">
-                            <span
-                                style="font-size:0.7rem; color:#06b6d4; text-transform:uppercase; display:block; margin-bottom:10px;">Candidate's
-                                Skillset (All Identified)</span>
-                            <div class="tag-wrap">
-                                {% if row.all_skills != "None" %}
-                                {% for s in row.all_skills.split(', ') %}<span class="tag"
-                                    style="background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.2); color: #67e8f9;">{{
-                                    s }}</span>{% endfor %}
-                                {% else %}
-                                <span style="color:#555;">No technical skills identified.</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div style="margin-bottom:25px;">
-                            <span
-                                style="font-size:0.7rem; color:#888; text-transform:uppercase; display:block; margin-bottom:10px;">Matched
-                                Skills (JD Focus)</span>
-                            <div class="tag-wrap">
-                                {% if row.skills != "None" %}
-                                {% for s in row.skills.split(', ') %}<span class="tag">{{ s }}</span>{% endfor %}
-                                {% else %}
-                                <span style="color:#555;">No JD matches found.</span>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% if row.missing != "None" %}
-                        <div>
-                            <span
-                                style="font-size:0.7rem; color:#f87171; text-transform:uppercase; display:block; margin-bottom:10px;">Missing
-                                Qualifications</span>
-                            <div class="tag-wrap">
-                                {% for m in row.missing.split(', ') %}<span class="tag missing">{{ m }}</span>{% endfor
-                                %}
-                            </div>
                         </div>
                         {% endif %}
-                    </div>
-                </div>
 
-                <div class="side-content">
-                    <div class="info-panel" style="margin-bottom:25px;">
-                        <div class="panel-title">Suggested Interview Questions</div>
-                        {% for q in row.questions %}
-                        <div class="question-box"><b>Q</b> {{ q }}</div>
-                        {% endfor %}
+                        <div class="info-panel">
+                            <div class="panel-title">Skill Inventory & Gaps</div>
+                            <div style="margin-bottom:20px;">
+                                <span style="font-size:0.72rem; color:var(--primary); text-transform:uppercase; font-weight:700; display:block; margin-bottom:8px;">Identified Candidate Capabilities</span>
+                                <div class="tag-wrap">
+                                    {% if row.all_skills != "None" %}
+                                        {% for s in row.all_skills.split(', ') %}
+                                            <span class="tag">{{ s }}</span>
+                                        {% endfor %}
+                                    {% else %}
+                                        <span style="color:var(--text-muted); font-size:0.85rem;">No technical competencies parsed.</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if row.missing != "None" %}
+                            <div>
+                                <span style="font-size:0.72rem; color:var(--status-danger); text-transform:uppercase; font-weight:700; display:block; margin-bottom:8px;">Missing Criteria</span>
+                                <div class="tag-wrap">
+                                    {% for m in row.missing.split(', ') %}
+                                        <span class="tag missing">{{ m }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
-                    <div class="info-panel">
-                        <div class="panel-title">Direct Connection</div>
-                        <p style="color:#fff; font-size:1rem; margin-bottom:20px;"><b>Email:</b> {{
-                            row.contact.split(',')[0].replace('Email: ', '') }}</p>
-                        <button class="btn-invite invite-btn"
-                            data-email="{{ row.contact.split(',')[0].replace('Email: ', '') }}"
-                            data-name="{{ row.name }}"
-                            style="border: none; cursor: pointer; font-family: 'Outfit';">Send Interview Invite</button>
-                        <button class="btn-invite pdf-btn"
-                            style="border: 1px solid var(--primary); background: transparent; color: var(--primary); margin-top: 10px; cursor: pointer; font-family: 'Outfit';">Export
-                            to PDF</button>
+
+                    <div class="side-content">
+                        <div class="info-panel" style="margin-bottom:20px;">
+                            <div class="panel-title">Suggested Technical Questions</div>
+                            {% for q in row.questions %}
+                            <div class="question-box"><b>Q</b> {{ q }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="info-panel">
+                            <div class="panel-title">Direct Connection</div>
+                            <p style="color:#fff; font-size:0.92rem; margin-bottom:16px;">
+                                <strong>Email:</strong> {{ row.contact.split(',')[0].replace('Email: ', '') }}
+                            </p>
+                            <button class="btn-invite invite-btn"
+                                data-email="{{ row.contact.split(',')[0].replace('Email: ', '') }}"
+                                data-name="{{ row.name }}">
+                                Dispatch Interview Invitation
+                            </button>
+                            <button class="btn-secondary pdf-btn" style="width: 100%; margin-top: 10px; font-size: 0.85rem; padding: 12px;">
+                                Print Profile PDF
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-    </div>
     </div>
 
     <script id="candidates-data" type="text/plain">{{ results | tojson | safe }}</script>
@@ -600,26 +503,39 @@
         var chartOptions = {
             responsive: true, maintainAspectRatio: false,
             plugins: { legend: { display: false } },
-            scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { grid: { display: false }, ticks: { color: '#888' } } }
+            scales: { 
+                y: { grid: { color: 'rgba(255,255,255,0.06)' }, ticks: { color: '#888' } }, 
+                x: { grid: { display: false }, ticks: { color: '#888' } } 
+            }
         };
 
-        /* Robust Chart.js check */
-        if (typeof Chart === 'undefined') {
-            document.querySelectorAll('.chart-card').forEach(c => c.innerHTML += '<p style="color:#555;font-size:0.8rem;margin-top:20px;">Chart.js failed to load. Check your internet connection.</p>');
-        } else {
+        if (typeof Chart !== 'undefined') {
             new Chart(document.getElementById('skillsChart'), {
                 type: 'bar',
-                data: { labels: sortedSkills.map(function (s) { return s[0] }), datasets: [{ data: sortedSkills.map(function (s) { return s[1] }), backgroundColor: '#06b6d4', borderRadius: 6 }] },
+                data: { 
+                    labels: sortedSkills.map(function (s) { return s[0] }), 
+                    datasets: [{ 
+                        data: sortedSkills.map(function (s) { return s[1] }), 
+                        backgroundColor: '#BAFF00', 
+                        borderRadius: 4 
+                    }] 
+                },
                 options: chartOptions
             });
             new Chart(document.getElementById('expChart'), {
                 type: 'doughnut',
-                data: { labels: Object.keys(expCounts), datasets: [{ data: Object.values(expCounts), backgroundColor: ['#a855f7', '#06b6d4', '#6366f1', '#475569'], borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#888' } } }, cutout: '75%' }
+                data: { 
+                    labels: Object.keys(expCounts), 
+                    datasets: [{ 
+                        data: Object.values(expCounts), 
+                        backgroundColor: ['#BAFF00', '#2D633D', '#5A6068', '#34383D'], 
+                        borderWidth: 0 
+                    }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#888' } } }, cutout: '72%' }
             });
         }
 
-        /* Filtering Logic */
         var searchInput = document.getElementById('searchInput');
         var seniorityFilter = document.getElementById('seniorityFilter');
         var cards = document.querySelectorAll('.candidate-card');
@@ -639,7 +555,6 @@
         searchInput.addEventListener('input', filterCandidates);
         seniorityFilter.addEventListener('change', filterCandidates);
 
-        /* PDF Export - uses event delegation */
         document.addEventListener('click', function (e) {
             if (e.target.classList.contains('pdf-btn')) {
                 var card = e.target.closest('.candidate-card');
@@ -649,7 +564,6 @@
             }
         });
 
-        /* Email Invite - uses event delegation */
         document.addEventListener('click', function (e) {
             if (e.target.classList.contains('invite-btn')) {
                 var email = e.target.getAttribute('data-email');
@@ -667,7 +581,6 @@
             }
         });
     </script>
-    <script src="/static/animation.js?v=1.1"></script>
+    <script src="/static/animation.js"></script>
 </body>
-
 </html>

@@ -4,112 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ATS History — AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <style>
         .history-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-top: 36px;
         }
         .history-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px;
-            padding: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            transition: all 0.25s ease;
+            box-shadow: var(--shadow-card);
         }
         .history-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            border-color: rgba(168, 85, 247, 0.4);
+            border-color: var(--lime-border);
+            transform: translateY(-3px);
         }
-        .score-badge {
+        .score-pill {
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            font-size: 1.1rem;
+            font-family: var(--font-heading);
+            margin-bottom: 12px;
         }
-        .score-high { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-        .score-med { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-        .score-low { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        .score-high { background: var(--lime); color: #0A0C0E; }
+        .score-med { background: rgba(255, 183, 3, 0.15); color: #FFB703; border: 1px solid rgba(255, 183, 3, 0.35); }
+        .score-low { background: rgba(255, 90, 95, 0.15); color: var(--status-danger); border: 1px solid rgba(255, 90, 95, 0.35); }
         
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 12px;
-            border: 1px dashed rgba(255,255,255,0.2);
+            padding: 80px 20px;
+            background: var(--bg-surface);
+            border-radius: var(--radius-md);
+            border: 1px dashed var(--border-medium);
+            margin-top: 36px;
         }
     </style>
 </head>
-<body class="dashboard-page">
-    <div class="grid-bg"></div>
-    <div class="orb-wrapper">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
+<body>
+    <div class="editorial-bg"></div>
 
-    <nav class="navbar" style="border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.8);">
-        <a href="/" class="nav-brand" style="text-decoration: none; color: white;">
-            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" width="28" height="28">
-                <polygon points="12,2 22,20 2,20" fill="url(#logoGrad)"/>
-                <defs><linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#a855f7"/><stop offset="100%" style="stop-color:#06b6d4"/></linearGradient></defs>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="4" fill="#BAFF00"/>
+                <circle cx="12" cy="12" r="4" fill="#0A0C0E"/>
             </svg>
-            <span class="brand-name">AI Screening</span>
+            <span class="brand-name">AI SCREENING</span>
         </a>
-        <div class="nav-links" style="display: flex; align-items: center; gap: 20px;">
-            <a href="/ats-check" style="color: #a855f7; text-decoration: none; font-weight: 600; margin-right: 10px;">New Check</a>
-            <span style="color: #9ca3af;">Hello, {{ current_user.name }}</span>
-            <a href="/logout" class="nav-link logout-btn" style="margin-right: 10px;">Log Out</a>
-            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
-                <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
-                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    Back to Home
-                </a>
-            </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <a href="/ats-check" class="btn-primary btn-sm">+ New Check</a>
+            <span class="badge-dark"><span class="badge-dot"></span> {{ current_user.name }}</span>
+            <a href="/logout" class="nav-link" style="color: var(--status-danger);">Log Out</a>
+            <a href="/" class="btn-secondary btn-sm">&larr; Return Home</a>
         </div>
     </nav>
 
-    <div class="container" style="padding-top: 100px;">
-        <h1 class="section-title" style="text-align: left; font-size: 2.5rem;">Your ATS <span class="gradient-text">History</span></h1>
-        <p style="color: #9ca3af; font-size: 1.1rem; margin-top: -10px;">Track your resume improvements over time.</p>
+    <div class="page-container" style="margin-top: 110px;">
+        <span class="badge-lime" style="margin-bottom: 12px;">CANDIDATE LOGS</span>
+        <h1 style="font-size: 2.4rem; margin-top: 8px;">Resume Diagnostic Archive</h1>
+        <p style="color: var(--text-muted); margin-top: 4px;">Historical tracking of ATS compliance checks and skill match progression.</p>
 
         {% if history %}
             <div class="history-grid">
                 {% for item in history %}
                 <div class="history-card">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div class="score-badge {% if item.score >= 80 %}score-high{% elif item.score >= 50 %}score-med{% else %}score-low{% endif %}">
+                        <div class="score-pill {% if item.score >= 80 %}score-high{% elif item.score >= 50 %}score-med{% else %}score-low{% endif %}">
                             {{ item.score }} / 100
                         </div>
-                        <span style="color: #64748b; font-size: 0.85rem;">{{ item.date }}</span>
+                        <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 600;">{{ item.date }}</span>
                     </div>
                     
-                    <h3 style="margin-bottom: 10px; font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ item.filename }}">
-                        {{ item.filename }}
+                    <h3 style="margin-bottom: 8px; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ item.filename }}">
+                        📄 {{ item.filename }}
                     </h3>
                     
                     {% if item.missing_skills %}
-                    <div style="margin-top: 15px;">
-                        <p style="color: #9ca3af; font-size: 0.85rem; margin-bottom: 5px;">Skills to improve:</p>
-                        <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                    <div style="margin-top: 14px;">
+                        <p style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; margin-bottom: 6px;">Skills to improve:</p>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                             {% for skill in item.missing_skills[:4] %}
-                                <span style="background: rgba(239, 68, 68, 0.1); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 2px 8px; border-radius: 4px; font-size: 0.75rem;">{{ skill }}</span>
+                                <span style="background: rgba(255, 90, 95, 0.1); color: var(--status-danger); border: 1px solid rgba(255,90,95,0.25); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">{{ skill }}</span>
                             {% endfor %}
                             {% if item.missing_skills|length > 4 %}
-                                <span style="color: #9ca3af; font-size: 0.75rem;">+{{ item.missing_skills|length - 4 }} more</span>
+                                <span style="color: var(--text-muted); font-size: 0.75rem; align-self: center;">+{{ item.missing_skills|length - 4 }} more</span>
                             {% endif %}
                         </div>
                     </div>
                     {% else %}
-                    <div style="margin-top: 15px;">
-                        <p style="color: #34d399; font-size: 0.85rem; margin-bottom: 5px;">✓ All key skills matched!</p>
+                    <div style="margin-top: 14px;">
+                        <p style="color: var(--lime); font-size: 0.85rem; font-weight: 700;">✓ Full JD Skill Coverage</p>
                     </div>
                     {% endif %}
                 </div>
@@ -117,15 +109,9 @@
             </div>
         {% else %}
             <div class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" width="48" height="48" stroke="#475569" stroke-width="1.5" style="margin-bottom: 20px;">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                </svg>
-                <h3 style="margin-bottom: 10px; color: #e2e8f0;">No history yet</h3>
-                <p style="color: #9ca3af; margin-bottom: 20px;">You haven't checked any resumes against an ATS yet.</p>
-                <a href="/ats-check" class="btn-primary" style="display: inline-flex;">Run your first check</a>
+                <h3 style="margin-bottom: 8px; color: #fff;">No Diagnostic Records Found</h3>
+                <p style="color: var(--text-muted); margin-bottom: 24px;">Run an initial resume check against job criteria to start tracking match metrics.</p>
+                <a href="/ats-check" class="btn-primary">Launch First ATS Diagnostic</a>
             </div>
         {% endif %}
     </div>

@@ -4,175 +4,163 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Command — AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
     <style>
         .admin-container {
-            max-width: 1200px;
-            margin: 120px auto 100px;
+            max-width: 1240px;
+            margin: 110px auto 100px;
             padding: 0 40px;
-        }
-        .admin-header {
-            margin-bottom: 60px;
-            text-align: left;
-            border-left: 5px solid var(--primary);
-            padding-left: 30px;
-        }
-        .admin-header h1 {
-            font-size: 3rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff, var(--primary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
         }
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 25px;
-            margin-bottom: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
         }
         .stat-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(168, 85, 247, 0.1);
-            padding: 25px;
-            border-radius: 24px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            padding: 24px;
+            border-radius: var(--radius-md);
             text-align: center;
+            box-shadow: var(--shadow-card);
         }
-        .stat-card .val { font-size: 2rem; font-weight: 800; color: #fff; }
-        .stat-card .label { font-size: 0.8rem; color: #888; text-transform: uppercase; margin-top: 5px; }
-
-        .navbar {
-            padding: 20px 40px;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(168,85,247,0.1);
+        .stat-card .val { 
+            font-size: 2.4rem; 
+            font-weight: 800; 
+            color: var(--lime); 
+            font-family: var(--font-heading);
         }
-        .nav-actions {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-        .admin-container {
-            max-width: 1300px;
-            margin: 120px auto 100px;
-            padding: 0 40px;
+        .stat-card .label { 
+            font-size: 0.78rem; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 0.06em;
+            margin-top: 6px; 
+            font-weight: 700;
         }
         .session-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 24px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            overflow: hidden;
         }
         .session-table th {
             text-align: left;
-            padding: 20px;
-            color: #888;
-            font-size: 0.9rem;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 16px 20px;
+            color: #D2D6DC;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            background: #2D3035;
+            border-bottom: 1px solid var(--border-medium);
         }
         .session-row td {
-            padding: 25px 20px;
-            color: #eee;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            padding: 20px;
+            color: var(--text-light);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 0.92rem;
         }
         .btn-view {
-            background: linear-gradient(135deg, #06b6d4, #0891b2);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 12px;
+            background: var(--lime);
+            color: #0A0C0E;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 0.82rem;
+            font-weight: 800;
             display: inline-block;
-            transition: 0.3s;
-            box-shadow: 0 5px 15px rgba(6, 182, 212, 0.2);
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .btn-view:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+            background: var(--lime-hover);
+            transform: translateY(-1px);
         }
         .btn-delete {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            padding: 10px 15px;
-            border-radius: 12px;
+            background: rgba(255, 90, 95, 0.1);
+            color: var(--status-danger);
+            border: 1px solid rgba(255, 90, 95, 0.3);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             font-weight: 700;
-            margin-left: 10px;
-            transition: 0.3s;
+            margin-left: 8px;
+            display: inline-block;
+            transition: all 0.2s;
         }
         .btn-delete:hover {
-            background: #ef4444;
+            background: var(--status-danger);
             color: #fff;
         }
         .user-badge {
-            background: rgba(168, 85, 247, 0.1);
-            color: var(--primary);
-            padding: 4px 12px;
-            border-radius: 8px;
+            background: rgba(186, 255, 0, 0.12);
+            color: var(--lime);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
             font-size: 0.8rem;
             font-weight: 700;
         }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
+    <div class="editorial-bg"></div>
+
     <nav class="navbar">
         <a href="/" class="nav-brand">
-            <svg viewBox="0 0 24 24" fill="none" width="30" height="30">
-                <polygon points="12,2 22,20 2,20" fill="url(#sGrad)" />
-                <defs>
-                    <linearGradient id="sGrad">
-                        <stop offset="0%" style="stop-color:#a855f7" />
-                        <stop offset="100%" style="stop-color:#06b6d4" />
-                    </linearGradient>
-                </defs>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="4" fill="#BAFF00"/>
+                <circle cx="12" cy="12" r="4" fill="#0A0C0E"/>
             </svg>
-            <span class="brand-name" style="font-weight: 900; margin-left: 10px;">AI Screening</span>
+            <span class="brand-name">AI SCREENING</span>
         </a>
-        <div class="nav-actions">
-            <span style="color: #a855f7; font-weight: 700;">Admin: {{ current_user.name }}</span>
-            <a href="/logout" style="color: #888; text-decoration: none; font-size: 0.85rem; font-weight: 600;">Logout</a>
-            <a href="/" style="color: #64748b; text-decoration: none; font-size: 0.85rem; font-weight: 600;">← Back to Home</a>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <span class="badge-dark"><span class="badge-dot"></span> Admin: {{ current_user.name }}</span>
+            <a href="/logout" class="nav-link" style="color: var(--status-danger);">Logout</a>
+            <a href="/" class="btn-secondary btn-sm">&larr; Return Home</a>
         </div>
     </nav>
 
     <div class="admin-container">
-        <div class="admin-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
             <div>
-                <h1>Master Archives</h1>
-                <p style="color: #777; margin-top: 10px;">Reviewing historical screening data across the AI Screening platform.</p>
+                <span class="badge-lime" style="margin-bottom: 12px;">SYSTEM CONTROLS</span>
+                <h1 style="font-size: 2.6rem; margin-top: 8px;">Recruitment Archives & Audits</h1>
+                <p style="color: var(--text-muted); margin-top: 4px;">Global session logs and candidate pipeline metrics.</p>
             </div>
-            <a href="/screen" class="btn-new">Launch Screening Tool</a>
+            <a href="/screen" class="btn-primary">Launch Screening Module</a>
         </div>
 
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="val">{{ sessions|length }}</div>
-                <div class="label">Shortlisting Sessions</div>
+                <div class="label">Shortlist Sessions</div>
             </div>
             <div class="stat-card">
                 <div class="val">{{ total_ats_checks }}</div>
                 <div class="label">Total ATS Checks</div>
             </div>
             <div class="stat-card">
-                <div class="val">{{ avg_score }}</div>
-                <div class="label">Avg Candidate Score</div>
+                <div class="val">{{ avg_score }}%</div>
+                <div class="label">Avg Candidate Rating</div>
             </div>
         </div>
 
-        <div style="display: flex; gap: 30px; margin-bottom: 50px;">
-            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center; height: 250px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 40px;">
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 24px; height: 260px; display: flex; align-items: center; justify-content: center;">
                 <canvas id="scoreChart"></canvas>
             </div>
-            <div style="flex: 1; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(168, 85, 247, 0.1); border-radius: 24px; padding: 25px; display: flex; align-items: center; justify-content: center; height: 250px;">
-                 <h2 style="color: #666; font-weight: 500;">More analytics coming soon...</h2>
+            <div style="background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 28px; display: flex; flex-direction: column; justify-content: center;">
+                <span class="badge-dark" style="align-self: flex-start; margin-bottom: 12px;">SYSTEM HEALTH</span>
+                <h3 style="font-size: 1.25rem; margin-bottom: 8px;">Active Screening Engines</h3>
+                <p style="color: var(--text-muted); font-size: 0.92rem; line-height: 1.6;">Deterministic keyword parser, ATS regex heuristics, Code execution sandbox, and conversational evaluation running nominal.</p>
             </div>
         </div>
 
@@ -185,8 +173,8 @@
                     labels: ['Average Score', 'Gap'],
                     datasets: [{
                         data: [{{ avg_score }}, {{ 100 - avg_score }}],
-                        backgroundColor: ['#06b6d4', 'rgba(255, 255, 255, 0.05)'],
-                        borderColor: ['#0891b2', 'transparent'],
+                        backgroundColor: ['#BAFF00', 'rgba(255, 255, 255, 0.06)'],
+                        borderColor: ['#BAFF00', 'transparent'],
                         borderWidth: 1
                     }]
                 },
@@ -194,9 +182,10 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'right', labels: { color: '#ccc' } },
-                        title: { display: true, text: 'Global Average ATS Score', color: '#fff', font: {size: 16} }
-                    }
+                        legend: { position: 'right', labels: { color: '#C7CBD1' } },
+                        title: { display: true, text: 'Global Average ATS Score', color: '#fff', font: {size: 14} }
+                    },
+                    cutout: '70%'
                 }
             });
         </script>
@@ -204,11 +193,11 @@
         <table class="session-table">
             <thead>
                 <tr>
-                    <th>Date</th>
+                    <th>Date / Time</th>
                     <th>Recruiter</th>
-                    <th>Job Description</th>
-                    <th>Candidates</th>
-                    <th>Action</th>
+                    <th>Job Specification Brief</th>
+                    <th>Applicants</th>
+                    <th style="text-align: right;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -216,18 +205,18 @@
                 <tr class="session-row">
                     <td>
                         <div style="font-weight: 700; color: #fff;">{{ s.created_at.strftime('%m-%d') }}</div>
-                        <div style="font-size: 0.75rem; color: #666;">{{ s.created_at.strftime('%H:%M') }}</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">{{ s.created_at.strftime('%H:%M') }}</div>
                     </td>
-                    <td><span class="user-badge">{{ s.user.name if s.user else 'Unknown' }}</span></td>
+                    <td><span class="user-badge">{{ s.user.name if s.user else 'System' }}</span></td>
                     <td>
-                        <div style="max-width: 350px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem;">
+                        <div style="max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.92rem;">
                             {{ s.job_description }}
                         </div>
-                        <div style="font-size: 0.75rem; color: #555; margin-top: 4px;">{{ s.candidates|length if s.candidates else 0 }} Resumes Processed</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">{{ s.candidates|length if s.candidates else 0 }} Resumes Evaluated</div>
                     </td>
-                    <td style="text-align: right; min-width: 250px;">
-                        <a href="{{ url_for('admin.view_session', session_id=s.id) }}" class="btn-view">Access Records</a>
-                        <a href="{{ url_for('admin.delete_session', session_id=s.id) }}" class="btn-delete" onclick="return confirm('Permanently delete this screening record?')">Delete</a>
+                    <td style="text-align: right; min-width: 240px;">
+                        <a href="{{ url_for('admin.view_session', session_id=s.id) }}" class="btn-view">Inspect</a>
+                        <a href="{{ url_for('admin.delete_session', session_id=s.id) }}" class="btn-delete" onclick="return confirm('Permanently remove this screening record?')">Delete</a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -235,6 +224,6 @@
         </table>
     </div>
 
-    <script src="/static/animation.js?v=1.1"></script>
+    <script src="/static/animation.js"></script>
 </body>
 </html>

@@ -3,128 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATS Score Checker | AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>ATS Score Checker — AI Screening</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <style>
         .ats-container {
-            max-width: 800px;
-            margin: 100px auto;
-            padding: 40px;
-            background: rgba(17, 24, 39, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            backdrop-filter: blur(12px);
+            max-width: 820px;
+            margin: 110px auto 60px;
+            padding: 48px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
         }
-        .ats-header {
+        .file-upload-box {
+            border: 2px dashed var(--border-medium);
+            padding: 44px 24px;
             text-align: center;
-            margin-bottom: 30px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #d1d5db;
-        }
-        .file-upload {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            padding: 40px;
-            text-align: center;
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.3s;
+            background: var(--bg-card);
+            transition: all 0.25s ease;
         }
-        .file-upload:hover {
-            border-color: #a855f7;
-            background: rgba(168, 85, 247, 0.05);
-        }
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(239, 68, 68, 0.3);
+        .file-upload-box:hover {
+            border-color: var(--lime);
+            background: #2D3035;
         }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
-    <div class="orb-wrapper">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
-    <nav class="navbar" id="navbar">
-        <div class="nav-brand">
-            <a href="/" style="text-decoration:none; display:flex; align-items:center; color:white;">
-                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" width="28" height="28" style="margin-right:10px;">
-                    <polygon points="12,2 22,20 2,20" fill="url(#logoGrad)" />
-                    <defs>
-                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#a855f7" />
-                            <stop offset="100%" style="stop-color:#06b6d4" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                <span class="brand-name">AI Screening</span>
-            </a>
-        </div>
-        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
-            <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
-                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                Back to Home
-            </a>
+    <div class="editorial-bg"></div>
+
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="4" fill="#BAFF00"/>
+                <circle cx="12" cy="12" r="4" fill="#0A0C0E"/>
+            </svg>
+            <span class="brand-name">AI SCREENING</span>
+        </a>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <a href="/" class="btn-secondary btn-sm">&larr; Return Home</a>
         </div>
     </nav>
 
     <div class="ats-container">
-        <div class="ats-header">
-            <h2><span class="gradient-text">ATS Score</span> Checker</h2>
-            <p>Upload your resume and the job description to see how you match up.</p>
+        <div style="text-align: center; margin-bottom: 36px;">
+            <span class="badge-lime" style="margin-bottom: 12px;">DIAGNOSTIC BENCHMARK</span>
+            <h1 style="font-size: 2.3rem; margin-top: 8px;">ATS Compliance Scanner</h1>
+            <p style="color: var(--text-muted); max-width: 580px; margin: 8px auto 0;">
+                Measure your resume against target job specifications to evaluate match rating, keyword presence, and parser readability.
+            </p>
         </div>
 
         {% if error %}
-        <div class="error-message">
+        <div class="alert alert-danger">
             {{ error }}
         </div>
         {% endif %}
 
         <form action="/ats-check" method="POST" enctype="multipart/form-data">
-            <div class="form-group">
-                <label>Job Description</label>
-                <textarea name="job_description" rows="6" placeholder="Paste the full job description here..." required style="width: 100%; padding: 12px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white;"></textarea>
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label>Target Job Specification</label>
+                <textarea name="job_description" rows="6" placeholder="Paste the complete job description, technical requirements, or role brief..." required></textarea>
             </div>
-            <div class="form-group">
-                <label>Upload Resume (PDF/DOCX)</label>
-                <div class="file-upload" onclick="document.getElementById('resume-input').click()">
-                    <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="1.5" fill="none" style="margin-bottom: 10px; color: #a855f7;">
+
+            <div class="form-group" style="margin-bottom: 32px;">
+                <label>Resume File (PDF / DOCX)</label>
+                <div class="file-upload-box" onclick="document.getElementById('resume-input').click()">
+                    <svg viewBox="0 0 24 24" width="44" height="44" stroke="currentColor" stroke-width="2" fill="none" style="margin-bottom: 12px; color: var(--lime);">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    <p id="file-name">Click to select file</p>
-                    <input type="file" name="resume" id="resume-input" accept=".pdf,.docx" required style="display: none;" onchange="document.getElementById('file-name').innerText = this.files[0].name">
+                    <p id="file-name" style="font-size: 1.05rem; font-weight: 600; color: var(--text-light);">
+                        Click to select candidate resume or drop file here
+                    </p>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 6px;">Supported formats: PDF, DOCX (Max 15MB)</span>
+                    <input type="file" name="resume" id="resume-input" accept=".pdf,.docx" required style="display: none;" onchange="document.getElementById('file-name').innerText = '📄 ' + this.files[0].name">
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; margin-top: 20px;">
-                Analyze My Resume
+
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 16px; font-size: 1rem;">
+                Calculate Match & ATS Score
             </button>
         </form>
     </div>
 
-    <div id="loading-overlay" style="display:none; position:fixed; inset:0; background:rgba(10,10,15,0.9); z-index:9999; align-items:center; justify-content:center; flex-direction:column; color:white; font-weight:700; gap: 20px;">
-        <div class="spinner" style="width: 40px; height: 40px; border-width: 4px;"></div>
-        Analyzing your resume...
+    <div id="loading-overlay">
+        <div class="loader-ring"></div>
+        <div class="loading-text">Extracting Skills and Benchmarking ATS Fit...</div>
     </div>
 
     <script>
         document.querySelector('form').addEventListener('submit', function() {
-            const overlay = document.getElementById('loading-overlay');
-            overlay.style.display = 'flex';
+            document.getElementById('loading-overlay').style.display = 'flex';
         });
     </script>
     <script src="/static/animation.js"></script>

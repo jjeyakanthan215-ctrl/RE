@@ -1,107 +1,84 @@
-// Animated mesh canvas 
-const canvas = document.createElement('canvas');
-canvas.id = 'meshCanvas';
-document.body.prepend(canvas);
+// ========================================================
+// AI SCREENING PLATFORM — INTERACTIVE STUDIO MICRO-INTERACTIONS
+// ========================================================
 
-const ctx = canvas.getContext('2d');
-let w, h, particles = [];
-
-let mouse = {
-    x: null,
-    y: null,
-    radius: 150
-};
-
-window.addEventListener('mousemove', function (event) {
-    mouse.x = event.x;
-    mouse.y = event.y;
-});
-
-window.addEventListener('mouseout', function () {
-    mouse.x = null;
-    mouse.y = null;
-});
-
-function resize() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-}
-window.addEventListener('resize', resize);
-resize();
-
-for (let i = 0; i < 80; i++) {
-    particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        r: Math.random() * 2 + 1
-    });
-}
-
-let animationFrameId;
-
-function draw() {
-    ctx.clearRect(0, 0, w, h);
-
-    for (let i = 0; i < particles.length; i++) {
-        let p = particles[i];
-
-        p.x += p.vx;
-        p.y += p.vy;
-
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-
-        if (mouse.x !== null && mouse.y !== null) {
-            let dx = p.x - mouse.x;
-            let dy = p.y - mouse.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < mouse.radius) {
-                let force = (mouse.radius - distance) / mouse.radius;
-                p.x += (dx / distance) * force * 2;
-                p.y += (dy / distance) * force * 2;
+document.addEventListener('DOMContentLoaded', () => {
+    // 1. Navbar scroll glass elevation
+    const navbar = document.querySelector('.navbar');
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 40) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
             }
-        }
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(168, 85, 247, 0.5)';
-        ctx.fill();
-
-        for (let j = i + 1; j < particles.length; j++) {
-            let q = particles[j];
-            let dx = p.x - q.x;
-            let dy = p.y - q.y;
-            let distSq = dx * dx + dy * dy;
-
-            if (distSq < 150 * 150) {
-                let dist = Math.sqrt(distSq);
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(q.x, q.y);
-                ctx.strokeStyle = `rgba(6, 182, 212, ${0.1 * (1 - dist / 150)})`;
-                ctx.lineWidth = 0.5;
-                ctx.stroke();
-            }
-        }
-
-        if (mouse.x !== null && mouse.y !== null) {
-            let dx = p.x - mouse.x;
-            let dy = p.y - mouse.y;
-            let distSq = dx * dx + dy * dy;
-            if (distSq < 200 * 200) {
-                let dist = Math.sqrt(distSq);
-                ctx.beginPath();
-                ctx.moveTo(p.x, p.y);
-                ctx.lineTo(mouse.x, mouse.y);
-                ctx.strokeStyle = `rgba(168, 85, 247, ${0.15 * (1 - dist / 200)})`;
-                ctx.lineWidth = 0.8;
-                ctx.stroke();
-            }
-        }
+        }, { passive: true });
     }
-    animationFrameId = requestAnimationFrame(draw);
-}
 
-draw();
+    // 2. Interactive Triage Studio Hero Mode Switcher
+    const tabButtons = document.querySelectorAll('.triage-tab-btn');
+    const viewContainers = document.querySelectorAll('.triage-view-content');
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetViewId = btn.getAttribute('data-target');
+
+            tabButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            viewContainers.forEach(view => {
+                if (view.id === targetViewId) {
+                    view.style.display = 'block';
+                    view.style.opacity = '0';
+                    view.style.transform = 'translateY(8px)';
+                    requestAnimationFrame(() => {
+                        view.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                        view.style.opacity = '1';
+                        view.style.transform = 'translateY(0)';
+                    });
+                } else {
+                    view.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // 3. Mini Sandbox Interactive "Run Test" trigger on Hero
+    const heroRunBtn = document.getElementById('hero-run-code-btn');
+    const heroTermOutput = document.getElementById('hero-term-status-badge');
+    const heroAssertionLog = document.getElementById('hero-assertion-log');
+
+    if (heroRunBtn && heroTermOutput && heroAssertionLog) {
+        heroRunBtn.addEventListener('click', () => {
+            heroRunBtn.innerHTML = 'Executing...';
+            heroTermOutput.innerHTML = 'COMPILING';
+            heroTermOutput.style.color = '#FFB703';
+
+            setTimeout(() => {
+                const randomLatency = (Math.random() * 3 + 2.1).toFixed(1);
+                heroRunBtn.innerHTML = '✓ Ran Successfully';
+                heroTermOutput.innerHTML = 'PASSED (0 ERRORS)';
+                heroTermOutput.style.color = 'var(--lime)';
+                heroAssertionLog.innerHTML = `> 12/12 assertions verified · Total runtime: ${randomLatency}ms`;
+
+                setTimeout(() => {
+                    heroRunBtn.innerHTML = '▶ Re-run Test Suite';
+                }, 2000);
+            }, 600);
+        });
+    }
+
+    // 4. Smooth Anchor Scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const targetId = this.getAttribute('href');
+            if (targetId.length > 1) {
+                const targetElem = document.querySelector(targetId);
+                if (targetElem) {
+                    e.preventDefault();
+                    targetElem.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    });
+});

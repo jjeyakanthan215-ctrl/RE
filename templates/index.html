@@ -1,200 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Screening — Smart Recruitment Platform</title>
-    <meta name="description" content="AI Screening provides powerful tools to screen, rank, and shortlist resumes at scale.">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <title>AI Screening — Modern Talent Evaluation & Shortlisting Platform</title>
+    <meta name="description" content="Precision recruitment engine. Batch screen candidate resumes, audit ATS compliance, run in-browser live coding tests, and conduct technical interviews.">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
- 
 <body>
-    <!-- Animated Mesh Background (injected via JS) -->
-    <div class="grid-bg"></div>
+    <div class="editorial-bg"></div>
 
-    <!-- Floating Orbs -->
-    <div class="orb-wrapper">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
-
-    <!-- Navbar -->
+    <!-- Navigation Bar -->
     <nav class="navbar" id="navbar">
-        <a href="/" class="nav-brand" style="text-decoration: none;">
-            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" width="28" height="28">
-                <polygon points="12,2 22,20 2,20" fill="url(#logoGrad)" />
-                <defs>
-                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#a855f7" />
-                        <stop offset="100%" style="stop-color:#06b6d4" />
-                    </linearGradient>
-                </defs>
+        <a href="/" class="nav-brand">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="4" fill="#1C1F25"/>
+                <circle cx="12" cy="12" r="5" fill="#BAFF00"/>
             </svg>
-            <span class="brand-name">AI Screening</span>
+            <div>
+                <span class="brand-name">AI SCREENING<span class="brand-dot">.</span></span>
+                <span class="brand-tagline">By ESCTRIX</span>
+            </div>
         </a>
-        <div class="nav-links" style="display: flex; align-items: center; gap: 10px; background: rgba(17, 24, 39, 0.15); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 4px 6px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.04); box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-            <a href="#features" style="font-weight: 600; color: #94a3b8; padding: 8px 16px; border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='#94a3b8'">Features</a>
-            <a href="#contact" style="font-weight: 600; color: #94a3b8; padding: 8px 16px; border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='#94a3b8'">Contact</a>
+
+        <div class="nav-links">
+            <span class="badge-lime">PRECISION ENGINE</span>
+            <a href="#triage" class="nav-link">Studio Demo</a>
+            <a href="#features" class="nav-link">Architecture</a>
+            <a href="#founder" class="nav-link">Leadership</a>
+            <a href="/screen" class="nav-link">Shortlist Resumes</a>
+            <a href="/ats-check" class="nav-link">ATS Scanner</a>
+            <a href="/coding-test" class="nav-link">Code Test</a>
+            <a href="/mock-interview" class="nav-link">Interview</a>
+
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="/admin" class="nav-link">Admin Logs</a>
+            {% endif %}
+            
             {% if current_user.is_authenticated %}
-                <span style="background: rgba(168,85,247,0.1); color: #a855f7; padding: 8px 16px; border-radius: 10px; font-weight: 700; font-size: 0.9rem; border: 1px solid rgba(168,85,247,0.15);">
-                    Hello, {{ current_user.name }}
-                </span>
-                <a href="/logout" style="color: #64748b; text-decoration: none; font-size: 0.85rem; font-weight: 700; padding: 8px 16px; border-radius: 10px; transition: all 0.2s;" onmouseover="this.style.background='rgba(239,68,68,0.05)'; this.style.color='#ef4444'" onmouseout="this.style.background='transparent'; this.style.color='#64748b'">Logout</a>
+                <a href="/history" class="badge-dark" style="text-decoration:none;">
+                    <span class="badge-dot"></span> {{ current_user.name }}
+                </a>
+                <a href="/logout" class="nav-link" style="color: #FF5A5F;">Logout</a>
             {% else %}
-                <a href="/login" class="nav-btn">Login</a>
+                <a href="/login" class="nav-link">Sign In</a>
+                <a href="/screen" class="btn-primary btn-sm">Start Triage</a>
             {% endif %}
         </div>
-    </nav>    <!-- Hero Section -->
-    <section class="hero" id="hero" style="padding-top: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-        <div class="hero-badge" style="margin-bottom: 32px;">
-            <span class="badge-dot"></span>
-            Screen and shortlist with absolute precision
-        </div>
+    </nav>
 
+    <!-- Main Hero: Interactive Triage Studio -->
+    <section class="hero-wrapper" id="triage">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert" style="background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.2); color: #c084fc; padding: 12px 24px; border-radius: 12px; margin-bottom: 24px; font-weight: 500;">
+                    <div class="alert" style="margin-bottom: 24px;">
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <h1 class="hero-title" style="font-size: clamp(3.5rem, 10vw, 6.5rem); font-weight: 900; margin-bottom: 12px; line-height: 0.95;">
-            <span class="gradient-text">AI Screening</span>
-        </h1>
-        
-        <p class="hero-subtitle" style="font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 800; color: #f8fafc; max-width: 800px; margin: 0 auto 12px; line-height: 1.1;">
-            Fair, Fast, and Human&#8209;Focused
-        </p>
-        
-        <p class="hero-subtitle" style="font-size: 1.15rem; color: #94a3b8; max-width: 600px; margin: 0 auto 48px; font-weight: 500;">
-            Precision&#8209;driven recruitment, simplified
-        </p>
+        <div class="hero-editorial-split">
+            <!-- Left Column: Copy & Actions -->
+            <div class="hero-intro">
+                <div style="display: inline-flex; align-items: center; gap: 8px; width: fit-content;">
+                    <span class="badge-lime">TALENT PIPELINE V2.5</span>
+                    <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em;">FOUNDED BY ESCTRIX</span>
+                </div>
 
-        <div class="hero-buttons">
-            <a href="/screen" class="btn-primary" id="btn-resume-shortlist">
-                <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" stroke-width="2.5">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                    <polyline points="14 2 14 8 20 8" />
-                    <line x1="16" y1="13" x2="8" y2="13" />
-                    <line x1="16" y1="17" x2="8" y2="17" />
-                </svg>
-                Resume Shortlist
-            </a>
-            <a href="/ats-check" class="btn-secondary" id="btn-ats-score">
-                <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" stroke-width="2">
-                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                </svg>
-                ATS Score Checking <span class="coming-soon-tag" style="background: #06b6d4; margin-left: 6px;">NEW</span>
-            </a>
-        </div>
+                <h1 class="hero-h1">
+                    Transparent hiring.<br>
+                    Deterministic scoring.<br>
+                    <span class="glow">Zero guesswork.</span>
+                </h1>
 
-        <div class="hero-buttons" style="margin-top: 16px;">
-            <a href="/mock-interview" class="btn-secondary" id="btn-mock-interview" style="border-color: rgba(168,85,247,0.3); color: #a855f7;">
-                <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z"/>
-                    <path d="M20 21a8 8 0 1 0-16 0"/>
-                </svg>
-                AI Mock Interview <span class="coming-soon-tag" style="background: #a855f7; margin-left: 6px;">BETA</span>
-            </a>
-            <a href="/coding-test" class="btn-secondary" id="btn-coding-test" style="border-color: rgba(6,182,212,0.3); color: #06b6d4;">
-                <svg viewBox="0 0 24 24" fill="none" width="18" height="18" stroke="currentColor" stroke-width="2">
-                    <polyline points="16 18 22 12 16 6"/>
-                    <polyline points="8 6 2 12 8 18"/>
-                </svg>
-                Live Coding Test <span class="coming-soon-tag" style="background: #06b6d4; margin-left: 6px;">BETA</span>
-            </a>
+                <p class="hero-sub">
+                    The modern technical recruitment cockpit built for high-velocity teams. Batch-triage candidate resumes against strict benchmarks, audit ATS readability, and verify technical depth with live coding and adaptive interviews.
+                </p>
+
+                <div class="hero-cta-bar">
+                    <a href="/screen" class="btn-primary">
+                        Launch Resume Shortlist
+                    </a>
+                    <a href="/ats-check" class="btn-secondary">
+                        Scan ATS Compliance
+                    </a>
+                </div>
+
+                <!-- Trust Metrics Bar -->
+                <div style="display: flex; gap: 32px; padding-top: 24px; border-top: 1px solid var(--border-light); margin-top: 8px; flex-wrap: wrap;">
+                    <div>
+                        <div style="font-size: 1.6rem; font-weight: 900; color: #FFFFFF; font-family: var(--font-heading); line-height: 1;">
+                            99.4<span style="color: var(--lime);">%</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-top: 4px;">
+                            Extraction Fidelity
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.6rem; font-weight: 900; color: #FFFFFF; font-family: var(--font-heading); line-height: 1;">
+                            10<span style="color: var(--lime);">x</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-top: 4px;">
+                            Triage Velocity
+                        </div>
+                    </div>
+                    <div>
+                        <div style="font-size: 1.6rem; font-weight: 900; color: #FFFFFF; font-family: var(--font-heading); line-height: 1;">
+                            6<span style="color: var(--lime);">+</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; margin-top: 4px;">
+                            Code IDE Runtimes
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Interactive Live Triage Studio Frame -->
+            <div class="triage-frame">
+                <!-- Interactive Tabs -->
+                <div class="triage-nav-tabs">
+                    <button class="triage-tab-btn active" data-target="view-matcher">
+                        📄 Matcher
+                    </button>
+                    <button class="triage-tab-btn" data-target="view-ats">
+                        ⚡ ATS Audit
+                    </button>
+                    <button class="triage-tab-btn" data-target="view-sandbox">
+                        💻 Code Test
+                    </button>
+                    <button class="triage-tab-btn" data-target="view-interview">
+                        🎙️ Interview
+                    </button>
+                </div>
+
+                <div class="triage-screen-view">
+                    <!-- Tab 1: Live Candidate Matcher Card -->
+                    <div class="triage-view-content" id="view-matcher">
+                        <div class="triage-candidate-box">
+                            <div class="triage-cand-top">
+                                <div class="cand-meta">
+                                    <div class="cand-badge-avatar">EM</div>
+                                    <div>
+                                        <h3 style="font-size: 1.2rem; color: #FFFFFF; margin: 0;">Elena Morales</h3>
+                                        <p style="font-size: 0.84rem; color: var(--text-muted); margin-top: 2px;">
+                                            Senior Backend Engineer · 5.4 YOE
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="cand-score-large">
+                                    <h2>96%</h2>
+                                    <span>JD Alignment</span>
+                                </div>
+                            </div>
+
+                            <div style="background: #191B20; border: 1px solid var(--border-light); border-radius: var(--radius-sm); padding: 14px 16px;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.74rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;">
+                                    <span>Verified Capabilities</span>
+                                    <span style="color: var(--lime);">14 Direct Matches</span>
+                                </div>
+                                <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                                    <span class="badge-lime" style="font-size: 0.72rem; padding: 3px 8px;">✓ Python 3.12</span>
+                                    <span class="badge-lime" style="font-size: 0.72rem; padding: 3px 8px;">✓ FastAPI</span>
+                                    <span class="badge-lime" style="font-size: 0.72rem; padding: 3px 8px;">✓ PostgreSQL</span>
+                                    <span class="badge-lime" style="font-size: 0.72rem; padding: 3px 8px;">✓ Docker / K8s</span>
+                                    <span class="badge-dark" style="font-size: 0.72rem; padding: 3px 8px;">Redis Queues</span>
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px;">
+                                <a href="/screen" class="btn-primary" style="flex: 1; padding: 10px; font-size: 0.8rem; justify-content: center;">
+                                    Upload Candidate Batch
+                                </a>
+                                <a href="/ats-check" class="btn-secondary" style="padding: 10px 16px; font-size: 0.8rem; justify-content: center;">
+                                    Full Dossier
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: ATS Parser Health Audit -->
+                    <div class="triage-view-content" id="view-ats" style="display: none;">
+                        <div class="ats-gauge-screen">
+                            <div class="gauge-visual">
+                                <h2>94</h2>
+                                <span>Health Index</span>
+                            </div>
+                            <div style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
+                                <div style="background: #191B20; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-light); display: flex; justify-content: space-between; font-size: 0.84rem;">
+                                    <span>Keyword Frequency</span>
+                                    <strong style="color: var(--lime);">24/25 (High)</strong>
+                                </div>
+                                <div style="background: #191B20; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-light); display: flex; justify-content: space-between; font-size: 0.84rem;">
+                                    <span>Parser Hierarchy</span>
+                                    <strong style="color: var(--lime);">Valid PDF Format</strong>
+                                </div>
+                                <div style="background: #191B20; padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border-light); display: flex; justify-content: space-between; font-size: 0.84rem;">
+                                    <span>Action Verbs</span>
+                                    <strong style="color: var(--lime);">100% Quantified</strong>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/ats-check" class="btn-primary" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 0.84rem; justify-content: center;">
+                            Audit Your Resume Now
+                        </a>
+                    </div>
+
+                    <!-- Tab 3: Interactive Sandbox Console -->
+                    <div class="triage-view-content" id="view-sandbox" style="display: none;">
+                        <div class="code-sandbox-mini">
+                            <div class="code-runner-line">
+                                <span style="color: var(--lime); font-weight: 700;">PYTEST TEST RUNNER</span>
+                                <span id="hero-term-status-badge" style="color: var(--lime); font-weight: 800;">READY</span>
+                            </div>
+                            <div style="color: #A0AEC0;">def test_rate_limiter_sliding_window():</div>
+                            <div style="color: #A0AEC0; padding-left: 16px;">limiter = RateLimiter(max_reqs=100, window=60)</div>
+                            <div style="color: #A0AEC0; padding-left: 16px;">assert limiter.allow_request('usr_92') is True</div>
+                            <div id="hero-assertion-log" style="color: var(--lime); margin-top: 8px;">
+                                &gt; 12/12 assertions verified · Total runtime: 3.2ms
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; margin-top: 14px;">
+                            <button class="btn-primary" id="hero-run-code-btn" style="flex: 1; padding: 11px; font-size: 0.82rem; justify-content: center;">
+                                ▶ Run Live Verification
+                            </button>
+                            <a href="/coding-test" class="btn-secondary" style="padding: 11px 18px; font-size: 0.82rem; justify-content: center;">
+                                Full Editor
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Mock Interview Dialogue -->
+                    <div class="triage-view-content" id="view-interview" style="display: none;">
+                        <div class="interview-dialogue-mini">
+                            <div class="int-bubble jerry">
+                                <strong style="color: var(--lime); display: block; font-size: 0.76rem; text-transform: uppercase;">Jerry · AI Interviewer</strong>
+                                "Can you explain how you design PostgreSQL index structures for high-write transaction pipelines?"
+                            </div>
+                            <div class="int-bubble cand">
+                                "I partition tables by time intervals, use BRIN indexes for append-heavy sequences, and isolate analytical reads."
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(186, 255, 0, 0.08); border: 1px solid var(--lime-border); padding: 8px 14px; border-radius: 6px;">
+                                <span style="font-size: 0.78rem; font-weight: 700; color: var(--lime);">ASSESSMENT GRADE: STRONG</span>
+                                <strong style="color: #FFFFFF; font-size: 0.84rem;">92 / 100</strong>
+                            </div>
+                        </div>
+                        <a href="/mock-interview" class="btn-primary" style="width: 100%; margin-top: 14px; padding: 11px; font-size: 0.82rem; justify-content: center;">
+                            Start AI Mock Interview
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features" id="features">
-        <h2 class="section-title">Why <span class="gradient-text">AI Screening</span>?</h2>
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Lightning Fast</h3>
-                <p>Screen hundreds of resumes in seconds with advanced keyword matching and smart analysis.</p>
+    <!-- Bento Grid Section (Modern 2026 Architectural Pillars) -->
+    <section class="bento-section" id="features">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 24px; border-bottom: 1px solid var(--border-light); margin-bottom: 12px; flex-wrap: wrap; gap: 16px;">
+            <div>
+                <span class="badge-lime" style="margin-bottom: 10px;">SYSTEM CAPABILITIES</span>
+                <h2 style="font-size: clamp(2rem, 3vw, 2.8rem); margin-top: 6px;">The 4 Pillars of Precision Screening</h2>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Precision Matching</h3>
-                <p>Smart skill extraction and job description matching to find the perfect candidates.</p>
+            <span class="badge-dark">ZERO-LATENCY DETERMINISM</span>
+        </div>
+
+        <div class="bento-grid">
+            <!-- Cell 1: Multi-Resume Batch Triage (Span 8) -->
+            <div class="bento-cell cell-col-8">
+                <div>
+                    <div class="bento-icon-box">⚡</div>
+                    <h3>Multi-Resume Batch Shortlisting</h3>
+                    <p>
+                        Ingest dozens of PDF and DOCX files simultaneously. The engine parses complex columns, education levels, and explicit technical skills without dropping text or hallucinating qualifications.
+                    </p>
+                </div>
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.82rem; color: var(--lime); font-weight: 700; text-transform: uppercase;">
+                        ✓ Batch Parser Enabled
+                    </span>
+                    <a href="/screen" class="btn-primary btn-sm">Launch Shortlist &rarr;</a>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Ranked Results</h3>
-                <p>Candidates are automatically scored and ranked so you focus on the best fits first.</p>
+
+            <!-- Cell 2: ATS Scanner (Span 4) -->
+            <div class="bento-cell cell-col-4">
+                <div>
+                    <div class="bento-icon-box">📊</div>
+                    <h3>ATS Health Audit</h3>
+                    <p>
+                        Audit single resumes against target job specs. Detect parsing bottlenecks, keyword gaps, and formatting red flags before applying.
+                    </p>
+                </div>
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light);">
+                    <a href="/ats-check" class="btn-secondary btn-sm" style="width: 100%; justify-content: center;">
+                        Check Resume Fit &rarr;
+                    </a>
+                </div>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon">📈</div>
-                <h3>Data Driven Insights</h3>
-                <p>Make better hiring decisions with comprehensive skill gap analysis and reporting.</p>
+
+            <!-- Cell 3: Code Execution Sandbox (Span 6) -->
+            <div class="bento-cell cell-col-6">
+                <div>
+                    <div class="bento-icon-box">💻</div>
+                    <h3>Live Code Execution IDE</h3>
+                    <p>
+                        Multi-language algorithmic sandbox supporting Python, JavaScript, Java, C, C++, and Shell. Runs automated test cases in an isolated subprocess with microsecond latency metrics.
+                    </p>
+                </div>
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.82rem; color: #D2D6DC; font-weight: 600;">6 Native Compilers</span>
+                    <a href="/coding-test" class="btn-secondary btn-sm">Open Sandbox &rarr;</a>
+                </div>
+            </div>
+
+            <!-- Cell 4: Conversational Interviewer (Span 6) -->
+            <div class="bento-cell cell-col-6">
+                <div>
+                    <div class="bento-icon-box">🎙️</div>
+                    <h3>AI Mock Interviewer</h3>
+                    <p>
+                        Conducts live technical interviews. Questions dynamically adapt to candidate seniority, evaluating clarity, system design depth, and problem breakdown with quantitative scoring.
+                    </p>
+                </div>
+                <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.82rem; color: #D2D6DC; font-weight: 600;">Realtime Rubric Scoring</span>
+                    <a href="/mock-interview" class="btn-secondary btn-sm">Enter Interview &rarr;</a>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact Section -->
+    <!-- Founder & Engineering Leadership Spotlight (Featuring Jey Jeyakanthan) -->
+    <section class="leadership-spotlight-section" id="founder">
+        <div class="founder-card">
+            <!-- Left Avatar & Verified Badges -->
+            <div class="founder-avatar-panel">
+                <div class="founder-photo-box">
+                    JJ
+                </div>
+                <div>
+                    <h3 style="font-size: 1.3rem; color: #FFFFFF; margin: 0;">Jey Jeyakanthan</h3>
+                    <p style="font-size: 0.78rem; font-weight: 800; color: var(--lime); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px;">
+                        Lead Architect & Founder
+                    </p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                        ESCTRIX Platform
+                    </p>
+                </div>
+
+                <div class="founder-links-row">
+                    <a href="https://www.linkedin.com/in/jey-jeyakanthan/" target="_blank" rel="noopener noreferrer" class="social-pill-btn" title="LinkedIn Profile">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="https://github.com/jjeyakanthan215-ctrl/RE" target="_blank" rel="noopener noreferrer" class="social-pill-btn" title="GitHub Repository">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                        GitHub
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Content & Vision -->
+            <div class="founder-content">
+                <span class="badge-lime" style="margin-bottom: 12px;">ENGINEERING ETHOS</span>
+                <h2>Human-Centered Talent Architecture</h2>
+                <div class="founder-role">Built by practitioners, for real engineering teams</div>
+                <div class="founder-quote">
+                    "Traditional recruitment tools became opaque black boxes — rejecting qualified candidates over trivial syntax or keyword games. We engineered AI Screening to bring mathematical clarity and fairness back to hiring. Every score is explainable, every candidate is evaluated on genuine technical merit, and every pipeline is 10x faster."
+                </div>
+
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <a href="/screen" class="btn-primary btn-sm">
+                        Try Shortlist Engine
+                    </a>
+                    <a href="https://www.linkedin.com/in/jey-jeyakanthan/" target="_blank" rel="noopener noreferrer" class="btn-secondary btn-sm">
+                        Connect on LinkedIn &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Direct Inquiries -->
     <section class="contact-section" id="contact">
         <div class="contact-wrapper">
             <div class="contact-info">
-                <h2 class="section-title" style="text-align:left; margin-bottom:20px;">Get in <span
-                        class="gradient-text">Touch</span></h2>
-                <p class="contact-desc">Have questions or need a demo? We'd love to hear from you.</p>
+                <span class="badge-lime" style="margin-bottom: 12px;">INQUIRIES</span>
+                <h2 style="font-size: 2.2rem; margin-top: 6px; margin-bottom: 14px;">Connect With ESCTRIX</h2>
+                <p style="color: var(--text-muted); font-size: 0.98rem; line-height: 1.6; margin-bottom: 30px;">
+                    Have questions regarding custom rubric configuration, volume processing, or integrations? Reach out directly.
+                </p>
+                
                 <div class="contact-details">
                     <div class="contact-item">
-                        <span class="contact-icon">📧</span>
+                        <span style="color: var(--lime); font-size: 1.3rem;">✉</span>
                         <div>
-                            <span class="contact-label">Email</span>
-                            <span class="contact-value">esctrix369@gmail.com</span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Direct Email</span>
+                            <div style="font-size: 0.98rem; font-weight: 700; color: #FFFFFF;">esctrix369@gmail.com</div>
                         </div>
                     </div>
                     <div class="contact-item">
-                        <span class="contact-icon">📍</span>
+                        <span style="color: var(--lime); font-size: 1.3rem;">📍</span>
                         <div>
-                            <span class="contact-label">Location</span>
-                            <span class="contact-value">idukki</span>
+                            <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Headquarters</span>
+                            <div style="font-size: 0.98rem; font-weight: 700; color: #FFFFFF;">Idukki, Kerala, India</div>
                         </div>
                     </div>
                 </div>
-                <div class="social-links" style="margin-top: 24px;">
-                    <a href="https://instagram.com" target="_blank" title="Instagram">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+
+                <div style="display: flex; gap: 12px; margin-top: 28px;">
+                    <a href="https://www.linkedin.com/in/jey-jeyakanthan/" target="_blank" rel="noopener noreferrer" class="social-pill-btn">
+                        LinkedIn
                     </a>
-                    <a href="https://linkedin.com" target="_blank" title="LinkedIn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    <a href="https://github.com/jjeyakanthan215-ctrl/RE" target="_blank" rel="noopener noreferrer" class="social-pill-btn">
+                        GitHub
                     </a>
-                    <a href="https://twitter.com" target="_blank" title="Twitter / X">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4l7.07 8.51L4 20h2l5.39-5.73L15 20h5l-7.38-8.87L19.63 4H18l-5.07 5.39L9 4H4z"/></svg>
-                    </a>
-                    <a href="https://bsky.app/profile/esctrix.bsky.social" target="_blank" title="Bluesky">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C8.5 5 5 9 5 12c0 3 2 4.5 4 4 -1.5 0.5-4 1.5-4 4h14c0-2.5-2.5-3.5-4-4 2 0.5 4-1 4-4 0-3-3.5-7-7-10z"/></svg>
+                    <a href="mailto:esctrix369@gmail.com" class="social-pill-btn">
+                        Email
                     </a>
                 </div>
             </div>
-            <form class="contact-form"
-                onsubmit="event.preventDefault(); this.reset(); alert('Message sent! We will get back to you soon.');">
+
+            <form class="contact-form" onsubmit="event.preventDefault(); this.reset(); alert('Thank you! Message transmitted to the ESCTRIX team.');">
                 <div class="form-group">
-                    <label for="name">Your Name</label>
-                    <input type="text" id="name" placeholder="John Doe" required>
+                    <label for="contact-name">Your Full Name</label>
+                    <input type="text" id="contact-name" placeholder="Alex Morgan" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" placeholder="john@example.com" required>
+                    <label for="contact-email">Work Email</label>
+                    <input type="email" id="contact-email" placeholder="alex@company.com" required>
                 </div>
                 <div class="form-group">
-                    <label for="message">Message</label>
-                    <textarea id="message" rows="4" placeholder="Tell us how we can help..." required></textarea>
+                    <label for="contact-message">Project Scope or Inquiry</label>
+                    <textarea id="contact-message" rows="4" placeholder="Detail your team's screening volume or specific integration requirements..." required></textarea>
                 </div>
-                <button type="submit" class="btn-primary" style="width:100%; justify-content:center;">Send
-                    Message</button>
+                <button type="submit" class="btn-primary" style="width: 100%;">
+                    Transmit Inquiry
+                </button>
             </form>
         </div>
     </section>
@@ -202,37 +446,19 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-inner">
-            <div class="footer-brand">
-                <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
-                    <polygon points="12,2 22,20 2,20" fill="url(#fGrad)" />
-                    <defs>
-                        <linearGradient id="fGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#a855f7" />
-                            <stop offset="100%" style="stop-color:#06b6d4" />
-                        </linearGradient>
-                    </defs>
+            <div style="display: flex; align-items: center; gap: 10px; font-weight: 800; text-transform: uppercase; font-size: 0.92rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect width="24" height="24" rx="4" fill="#BAFF00"/>
+                    <circle cx="12" cy="12" r="4" fill="#0A0C0E"/>
                 </svg>
-                <span>AI Screening</span>
+                <span>AI SCREENING PLATFORM · ESCTRIX</span>
             </div>
-
-            <p>&copy; 2026 made by esctrix team.</p>
+            <p style="color: var(--text-subtle); font-size: 0.85rem;">
+                &copy; 2026 Engineered with precision by <a href="https://www.linkedin.com/in/jey-jeyakanthan/" target="_blank" rel="noopener noreferrer" style="color: var(--lime); font-weight: 700;">Jey Jeyakanthan</a> and the ESCTRIX team.
+            </p>
         </div>
     </footer>
 
-    <script>
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const nav = document.getElementById('navbar');
-            nav.classList.toggle('scrolled', window.scrollY > 50);
-        });
-
-        // Fade-in on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.feature-card, .section-title, .contact-wrapper').forEach(el => observer.observe(el));
-    </script>
-    <!-- Interactive Background Animation -->
     <script src="/static/animation.js"></script>
 </body>
 </html>

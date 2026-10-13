@@ -4,180 +4,164 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resume Shortlist — AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=1.1">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
     <style> 
-        .container {
-            position: relative; z-index: 1;
-            max-width: 800px; margin: 120px auto 60px; padding: 50px;
-            background: rgba(15, 15, 25, 0.7);
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            border-radius: 32px;
-            backdrop-filter: blur(15px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        .screen-container {
+            max-width: 900px;
+            margin: 110px auto 60px;
+            padding: 48px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
         }
-        .container h2 {
-            text-align: center; font-size: 2.2rem; font-weight: 900;
-            margin-bottom: 10px; 
-            background: linear-gradient(135deg, #fff 0%, #a855f7 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .subtitle { text-align: center; color: #888; font-size: 1rem; margin-bottom: 40px; }
         
-        .form-section { margin-bottom: 35px; }
-        .label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        label { color: #a855f7; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; }
-        
-        /* Template Selector */
-        .template-select {
-            background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2);
-            color: #d8b4fe; padding: 5px 12px; border-radius: 8px; font-size: 0.75rem;
-            font-family: 'Outfit', sans-serif; cursor: pointer; outline: none;
-        }
-
-        textarea {
-            width: 100%; padding: 20px; border-radius: 18px;
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            background: rgba(10, 10, 15, 0.8); color: #fff;
-            font-family: 'Outfit', sans-serif; font-size: 1rem;
-            resize: vertical; min-height: 140px; outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        textarea:focus { border-color: #a855f7; box-shadow: 0 0 25px rgba(168, 85, 247, 0.2); transform: translateY(-2px); }
-
         .upload-zone {
-            position: relative;
-            border: 2px dashed rgba(168, 85, 247, 0.3);
-            border-radius: 20px;
-            padding: 50px;
+            border: 2px dashed rgba(255, 255, 255, 0.18);
+            border-radius: var(--radius-md);
+            padding: 48px 30px;
             text-align: center;
-            background: rgba(168, 85, 247, 0.03);
-            transition: all 0.3s ease;
+            background: var(--bg-card);
             cursor: pointer;
+            transition: all 0.25s ease;
         }
-        .upload-zone.dragover { background: rgba(168, 85, 247, 0.1); border-color: #a855f7; transform: scale(1.02); }
-        .upload-zone svg { color: #a855f7; margin-bottom: 20px; transition: transform 0.3s ease; }
-        .upload-zone:hover svg { transform: translateY(-8px); }
-        .upload-zone p { color: #aaa; font-size: 1.1rem; margin: 0; }
-        .upload-zone span { color: #a855f7; font-weight: 700; }
-        #file-input { display: none; }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--lime);
+            background: #2D3035;
+        }
+        .upload-zone svg {
+            color: var(--lime);
+            margin-bottom: 16px;
+        }
+        .upload-zone p {
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+        .upload-zone span {
+            color: var(--lime);
+            font-weight: 700;
+        }
         
-        #file-list { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
-        .file-tag { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; padding: 8px 16px; border-radius: 12px; font-size: 0.9rem; border: 1px solid rgba(168, 85, 247, 0.4); }
-
-        .btn-submit {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            width: 100%; padding: 20px;
-            margin-top: 20px; border: none; border-radius: 18px;
-            background: linear-gradient(135deg, #a855f7, #06b6d4);
-            color: #fff; font-weight: 800;
-            font-size: 1.2rem; cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 15px 35px rgba(168, 85, 247, 0.4);
+        #file-list {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
         }
-        .btn-submit:hover { transform: translateY(-5px); box-shadow: 0 20px 50px rgba(168, 85, 247, 0.5); }
+        .file-tag {
+            background: rgba(186, 255, 0, 0.12);
+            color: var(--lime);
+            border: 1px solid var(--lime-border);
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            font-weight: 600;
+        }
 
-        .btn-back { text-decoration: none; color: #888; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; transition: color 0.3s; }
-        .btn-back:hover { color: #fff; }
-
-        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .loader-ring { width: 80px; height: 80px; border: 5px solid rgba(168, 85, 247, 0.1); border-top: 5px solid #a855f7; border-radius: 50%; animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .loading-text { color: #fff; margin-top: 30px; font-weight: 700; letter-spacing: 2px; font-size: 1.1rem; }
+        .template-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            color: var(--lime);
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
-    <div class="orb-wrapper">
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        <div class="orb orb-4"></div>
-    </div>
+    <div class="editorial-bg"></div>
 
-    <nav class="navbar scrolled">
-        <a href="/" class="nav-brand" style="text-decoration:none;">
-            <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
-                <polygon points="12,2 22,20 2,20" fill="url(#sGrad)"/>
-                <defs><linearGradient id="sGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#a855f7"/><stop offset="100%" style="stop-color:#06b6d4"/></linearGradient></defs>
+    <nav class="navbar">
+        <a href="/" class="nav-brand">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <rect width="24" height="24" rx="4" fill="#BAFF00"/>
+                <circle cx="12" cy="12" r="4" fill="#0A0C0E"/>
             </svg>
-            <span class="brand-name" style="font-family:'Outfit'; font-weight:900;">AI Screening</span>
+            <span class="brand-name">AI SCREENING</span>
         </a>
-        <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 16px;">
             {% if current_user.is_authenticated %}
-                <span style="color: #a855f7; font-weight: 700; font-size: 0.95rem;">Hello, {{ current_user.name }}</span>
-                <a href="/logout" style="color: #888; text-decoration: none; font-size: 0.85rem; font-weight: 600; margin-right: 10px;">Logout</a>
+                <span class="badge-dark"><span class="badge-dot"></span> {{ current_user.name }}</span>
             {% endif %}
-            <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 12px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
-                <a href="/" style="color: #94a3b8; text-decoration:none; font-size:0.85rem; font-weight:600; display: flex; align-items: center; gap: 6px; transition: color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">
-                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-                    Back to Home
-                </a>
-            </div>
+            <a href="/" class="btn-secondary btn-sm">&larr; Return Home</a>
         </div>
     </nav>
 
-    <div class="container">
+    <div class="screen-container">
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <div style="background: rgba(236,72,153,0.1); border: 1px solid rgba(236,72,153,0.3); color: #f9a8d4; padding: 15px; border-radius: 12px; margin-bottom: 25px; text-align: center; font-size: 0.9rem;">
+                    <div class="alert">
                         {{ message }}
                     </div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
 
-        <h2>Smart Screening</h2>
-        <p class="subtitle">Enter requirements or pick a template to begin.</p>
+        <div style="text-align: center; margin-bottom: 36px;">
+            <span class="badge-lime" style="margin-bottom: 12px;">PRECISION SHORTLISTING</span>
+            <h1 style="font-size: 2.3rem; margin-top: 8px;">Upload & Rank Candidates</h1>
+            <p style="color: var(--text-muted); max-width: 580px; margin: 8px auto 0;">
+                Input the target technical specifications and upload applicant resumes in PDF or DOCX format for instant scoring.
+            </p>
+        </div>
         
         <form action="/screen" method="POST" enctype="multipart/form-data" id="upload-form">
-            <div class="form-section">
-                <div class="label-row">
-                    <label>Job Requirements</label>
+            <div class="form-group" style="margin-bottom: 28px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <label for="jd-area">Job Requirements & Technical Stack</label>
                     <select class="template-select" id="template-selector">
-                        <option value="">Quick Templates</option>
-                        <option value="python">Python Developer</option>
-                        <option value="frontend">Frontend Engineer</option>
-                        <option value="data">Data Scientist</option>
-                        <option value="sales">Sales Executive</option>
+                        <option value="">Pre-filled Templates</option>
+                        <option value="python">Senior Python Engineer</option>
+                        <option value="frontend">Frontend / React Architect</option>
+                        <option value="data">Data Scientist / ML Engineer</option>
+                        <option value="sales">Technical Sales Executive</option>
                     </select>
                 </div>
-                <textarea name="job_description" id="jd-area" placeholder="Describe the ideal candidate..." required></textarea>
+                <textarea name="job_description" id="jd-area" rows="5" placeholder="Define required core competencies, technologies, frameworks, years of experience, and responsibilities..." required></textarea>
             </div>
 
-            <div class="form-section">
-                <label>Candidate Resumes</label>
+            <div class="form-group" style="margin-bottom: 32px;">
+                <label>Applicant Resumes (Batch PDF / DOCX)</label>
                 <div class="upload-zone" id="drop-zone">
-                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                    <p>Drag and drop PDF/DOCX here, or <span>browse files</span></p>
-                    <input type="file" name="resumes" id="file-input" multiple required>
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    <p>Drag and drop applicant files here, or <span>click to browse</span></p>
+                    <input type="file" name="resumes" id="file-input" multiple required style="display: none;">
                     <div id="file-list"></div>
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">Analyze & Rank</button>
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 16px; font-size: 1rem;">
+                Run Precision Shortlist Engine
+            </button>
         </form>
     </div>
 
     <div id="loading-overlay">
         <div class="loader-ring"></div>
-        <div class="loading-text">SYSTEM IS ANALYZING CANDIDATES...</div>
+        <div class="loading-text">Parsing and Scoring Resumes...</div>
     </div>
 
     <script>
         const templates = {
-            python: "Python, Django, Flask, PostgreSQL, REST API, Git, 3+ years experience, Unit testing, Docker, AWS.",
-            frontend: "React, TypeScript, CSS3, HTML5, Redux, Responsive Design, 2+ years experience, Figma, Webpack, Performance Optimization.",
-            data: "Python, SQL, Machine Learning, Pandas, NumPy, Scikit-Learn, Statistics, Data Visualization, R, 4+ years experience.",
-            sales: "Sales, Communication, Negotiation, CRM, Lead Generation, Marketing, 2+ years experience, Customer Relationship, Team Player."
+            python: "Python, Django, FastAPI, PostgreSQL, REST APIs, Git, Docker, Kubernetes, AWS, 3+ years experience, Unit testing, PyTest, Microservices.",
+            frontend: "React, TypeScript, Next.js, CSS3, HTML5, State Management, Responsive Layouts, Figma to Code, Performance Optimization, 3+ years experience.",
+            data: "Python, SQL, Machine Learning, Pandas, NumPy, Scikit-Learn, PyTorch/TensorFlow, Statistics, Data Pipelines, R, 4+ years experience.",
+            sales: "B2B SaaS Sales, Enterprise Solution Selling, CRM Management, Pipeline Growth, Product Demonstrations, Negotiation, 3+ years experience."
         };
 
         const selector = document.getElementById('template-selector');
         const jdArea = document.getElementById('jd-area');
 
         selector.addEventListener('change', () => {
-            if(templates[selector.value]) {
+            if (templates[selector.value]) {
                 jdArea.value = templates[selector.value];
             }
         });
@@ -191,8 +175,11 @@
         dropZone.addEventListener('click', () => fileInput.click());
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, (ev) => { ev.preventDefault(); ev.stopPropagation(); }));
         ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('dragover')));
-        ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('dragleave')));
-        dropZone.addEventListener('drop', (e) => { fileInput.files = e.dataTransfer.files; updateFileList(); });
+        ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('dragover')));
+        dropZone.addEventListener('drop', (e) => { 
+            fileInput.files = e.dataTransfer.files; 
+            updateFileList(); 
+        });
         fileInput.addEventListener('change', updateFileList);
 
         function updateFileList() {
@@ -200,10 +187,11 @@
             Array.from(fileInput.files).forEach(f => {
                 const tag = document.createElement('div');
                 tag.className = 'file-tag';
-                tag.textContent = f.name;
+                tag.textContent = '📄 ' + f.name;
                 fileList.appendChild(tag);
             });
         }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             loading.style.display = 'flex';
@@ -213,9 +201,7 @@
                 const response = await fetch('/screen', {
                     method: 'POST',
                     body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
                 });
                 
                 const data = await response.json();
@@ -228,10 +214,10 @@
             } catch (error) {
                 loading.style.display = 'none';
                 console.error('Error:', error);
-                alert('A system error occurred. Please try again.');
+                alert('A system error occurred. Please verify your connection.');
             }
         });
     </script>
-    <script src="/static/animation.js?v=1.1"></script>
+    <script src="/static/animation.js"></script>
 </body>
 </html>
