@@ -19,10 +19,15 @@ WORKDIR /app
 # Copy requirements first to leverage Docker layer caching
 COPY requirements.txt .
 
+# Create and activate virtual environment to avoid root user conflicts and warnings
+ENV VIRTUAL_ENV=/opt/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 # Install CPU-only PyTorch first to keep the Docker image small and build fast
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip --root-user-action=ignore && \
+    pip install --no-cache-dir --root-user-action=ignore torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
+    pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
 # Pre-download required NLTK corpora to avoid runtime download overhead and network issues
 RUN python -c "import nltk; \
