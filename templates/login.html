@@ -3,14 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Sign In — AI Screening</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .auth-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 24px 60px;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body class="auth-page">
     <div class="editorial-bg"></div>
 
-    <nav class="navbar" style="border-bottom: 1px solid var(--border-light); background: rgba(30, 32, 35, 0.9);">
+    <nav class="navbar">
         <a href="/" class="nav-brand">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <rect width="24" height="24" rx="4" fill="#BAFF00"/>
@@ -19,38 +29,43 @@
             <span class="brand-name">AI SCREENING</span>
         </a>
         <a href="/" class="btn-secondary btn-sm">
-            &larr; Back to Platform
+            &larr; Return to Platform
         </a>
     </nav>
 
-    <div class="auth-container" style="margin-top: 60px;">
-        <h2>Access Portal</h2>
-        <p class="auth-subtitle">Sign in to manage shortlisting and assessment workflows</p>
-        
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert">
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span class="badge-lime" style="margin-bottom: 10px;">SIGN IN</span>
+                <h2>Recruiter & Candidate Portal</h2>
+                <p class="auth-subtitle">Access your shortlisting sessions and ATS evaluations</p>
+            </div>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-        <form action="/login" method="POST" class="contact-form">
-            <div class="form-group">
-                <label for="email">Work Email</label>
-                <input type="email" id="email" name="email" required placeholder="name@organization.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
-                Sign In
-            </button>
-        </form>
-        <p class="auth-footer">Don't have an account? <a href="/signup">Create one now</a></p>
+            <form action="/login" method="POST" class="contact-form">
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input type="email" id="email" name="email" required placeholder="name@organization.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 12px; padding: 14px; font-size: 0.95rem; justify-content: center;">
+                    Sign In
+                </button>
+            </form>
+            <p class="auth-footer">Don't have an account yet? <a href="/signup">Create one now</a></p>
+        </div>
     </div>
 
     <script src="/static/animation.js"></script>

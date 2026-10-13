@@ -4,13 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account — AI Screening</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .auth-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 24px 60px;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body class="auth-page">
     <div class="editorial-bg"></div>
 
-    <nav class="navbar" style="border-bottom: 1px solid var(--border-light); background: rgba(30, 32, 35, 0.9);">
+    <nav class="navbar">
         <a href="/" class="nav-brand">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                 <rect width="24" height="24" rx="4" fill="#BAFF00"/>
@@ -19,53 +29,58 @@
             <span class="brand-name">AI SCREENING</span>
         </a>
         <a href="/" class="btn-secondary btn-sm">
-            &larr; Back to Platform
+            &larr; Return to Platform
         </a>
     </nav>
 
-    <div class="auth-container" style="margin-top: 60px;">
-        <h2>Create Account</h2>
-        <p class="auth-subtitle">Join the modern talent screening and assessment network</p>
-        
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <div class="alert">
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
+    <div class="auth-wrapper">
+        <div class="auth-container">
+            <div style="text-align: center; margin-bottom: 24px;">
+                <span class="badge-lime" style="margin-bottom: 10px;">REGISTRATION</span>
+                <h2>Create Your Account</h2>
+                <p class="auth-subtitle">Join the modern talent screening and assessment network</p>
+            </div>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
 
-        <form action="/signup" method="POST" class="contact-form">
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required placeholder="Alex Morgan">
-            </div>
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required placeholder="name@organization.com">
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="••••••••">
-            </div>
-            <div class="form-group">
-                <label>Account Role</label>
-                <div style="display: flex; gap: 20px; margin-top: 4px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-white); font-size: 0.92rem;">
-                        <input type="radio" name="role" value="candidate" checked style="accent-color: var(--lime);"> Candidate
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-white); font-size: 0.92rem;">
-                        <input type="radio" name="role" value="recruiter" style="accent-color: var(--lime);"> Recruiter
-                    </label>
+            <form action="/signup" method="POST" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Alex Morgan">
                 </div>
-            </div>
-            <button type="submit" class="btn-primary" style="width: 100%; margin-top: 10px;">
-                Complete Registration
-            </button>
-        </form>
-        <p class="auth-footer">Already have an account? <a href="/login">Sign in</a></p>
+                <div class="form-group">
+                    <label for="email">Work Email</label>
+                    <input type="email" id="email" name="email" required placeholder="name@organization.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="••••••••">
+                </div>
+                <div class="form-group">
+                    <label>Account Role</label>
+                    <div style="display: flex; gap: 20px; margin-top: 4px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-white); font-size: 0.92rem;">
+                            <input type="radio" name="role" value="candidate" checked style="accent-color: var(--lime);"> Candidate
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-white); font-size: 0.92rem;">
+                            <input type="radio" name="role" value="recruiter" style="accent-color: var(--lime);"> Recruiter
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 12px; padding: 14px; font-size: 0.95rem; justify-content: center;">
+                    Complete Registration
+                </button>
+            </form>
+            <p class="auth-footer">Already registered? <a href="/login">Sign in</a></p>
+        </div>
     </div>
 
     <script src="/static/animation.js"></script>
